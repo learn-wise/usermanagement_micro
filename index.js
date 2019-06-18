@@ -1,6 +1,8 @@
 require('@babel/register')
-const  app =require('./server/index');
-const  http =require('http');
+require('dotenv').config()
+const app = require('./server/index');
+const http = require('http');
+const chalk = require('chalk')
 // import https from 'https';
 
 // const Options = {
@@ -8,7 +10,7 @@ const  http =require('http');
 //     key:
 // }
 
-http.createServer(app).listen(8080,()=>{
-    console.log('server is running on port 8080')
+http.createServer(app).listen(process.env.PORT, () => {
+    console.log(' ❤️ ⚙️  ' + chalk.bold.black.bgCyan(`Server is running on port ${process.env.PORT}`))
 });
 // https.createServer(Options,app).listen(443);

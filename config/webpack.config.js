@@ -1,15 +1,18 @@
 const path = require('path'),
-    HtmlWebpackPlugin = require('html-webpack-plugin'),
     webpack = require('webpack'),
     BrotliPlugin = require('brotli-webpack-plugin'),
     CompressionPlugin = require('compression-webpack-plugin'),
     ExtractTextPlugin = require('extract-text-webpack-plugin'),
+    WebpackMessages = require('webpack-messages'),
     UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-process.env.NODE_ENV = 'production'
+const isEnvProduction = process.env.NODE_ENV === 'production' ? true : false;
+const isEnvDevelopment = process.env.NODE_ENV === 'development' ? true : false;
 
 module.exports = {
-    mode: "development",
+    name: "client",
+    target: "web",
+    mode: process.env.NODE_ENV,
     entry: [
         "@babel/runtime/regenerator",
         "webpack-hot-middleware/client?noInfo=true&timeout=2000",
@@ -20,8 +23,9 @@ module.exports = {
         filename: 'public-bundle.js',
         chunkFilename: 'public-bundle.chunk.js',
         path: path.join(__dirname, '../dist'),
-        publicPath:'/'
+        publicPath: '/'
     },
+    stats: 'none',
     devtool: "cheap-module-source-map",
     optimization: {
         splitChunks: {
@@ -55,6 +59,11 @@ module.exports = {
             })
         ],
     },
+    resolve: {
+        alias: {
+            'react-dom': '@hot-loader/react-dom'
+        }
+    },
     module: {
         rules: [
 
@@ -77,8 +86,8 @@ module.exports = {
                     loader: require.resolve("babel-loader"),
                     options: {
                         cacheDirectory: true,
-                        cacheCompression: false,
-                        compact: false,
+                        cacheCompression: isEnvProduction,
+                        compact: isEnvProduction,
                     }
                 }, ]
             },
@@ -88,8 +97,8 @@ module.exports = {
                 loader: require.resolve('babel-loader'),
                 options: {
                     babelrc: false,
-                    configFile: false,
-                    compact: false,
+                    configFile: isEnvProduction,
+                    compact: isEnvProduction,
                     presets: [
                         [
                             require.resolve('babel-preset-react-app/dependencies'),
@@ -99,8 +108,8 @@ module.exports = {
                         ]
                     ],
                     cacheDirectory: true,
-                    cacheCompression: false,
-                    sourceMaps: false,
+                    cacheCompression: isEnvProduction,
+                    sourceMaps: isEnvProduction,
                 },
             },
             {
@@ -157,35 +166,32 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(), // Enable HMR
-        new CompressionPlugin({
+        isEnvDevelopment && new webpack.HotModuleReplacementPlugin(), // Enable HMR
+        isEnvProduction && new CompressionPlugin({
             algorithm: "gzip"
         }),
-        // new BrotliPlugin({
-        //     asset: '[path].br[query]',
-        //     test: /\.(js|css|html|svg)$/,
-        //     threshold: 10240,
-        //     minRatio: 0.8,
-        // }),
+        isEnvProduction && new BrotliPlugin({
+            asset: '[path].br[query]',
+            test: /\.(js|css|html|svg|jpg)$/,
+            threshold: 10240,
+            minRatio: 0.8,
+            // deleteOriginalAssets: true
+        }),
         new ExtractTextPlugin('stylesheets/[name].css'),
-        new HtmlWebpackPlugin(
-            Object.assign({}, {
-                inject: true,
-                template: 'client/index.html',
-            }, {
-                minify: {
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    removeRedundantAttributes: true,
-                    useShortDoctype: true,
-                    removeEmptyAttributes: true,
-                    removeStyleLinkTypeAttributes: true,
-                    keepClosingSlash: true,
-                    minifyJS: true,
-                    minifyCSS: true,
-                    minifyURLs: true,
-                },
-            })),
-        // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    ]
+        new WebpackMessages({
+            name: 'client',
+            logger: str => console.log(`>> ${str}`)
+        }),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    ].filter(Boolean),
+    node: {
+        module: 'empty',
+        dgram: 'empty',
+        dns: 'mock',
+        fs: 'empty',
+        http2: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty',
+    },
 }
