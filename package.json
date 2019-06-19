@@ -12,8 +12,8 @@
     "eslintConfig": {
         "extends": "react-app"
     },
-    "browserslist":{
-        "production":[
+    "browserslist": {
+        "production": [
             "last 2 version",
             ">0.2%",
             "maintained node versions",
@@ -23,7 +23,7 @@
             "ie 8",
             "ie 9"
         ],
-        "development":[
+        "development": [
             "last 1 chrome version",
             "last 1 firefox version",
             "last 1 safari version"
@@ -107,6 +107,7 @@
         "socket.io-redis": "*",
         "uglifyjs-webpack-plugin": "*",
         "validator": "*",
+        "webpack-isomorphic-tools": "^3.0.6",
         "webpack-merge": "*",
         "webpack-node-externals": "*",
         "x-xss-protection": "*"

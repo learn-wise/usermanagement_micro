@@ -13,7 +13,7 @@ class Login extends Component{
                             <input 
                                 type="text" 
                                 id='username' 
-                                className={classes.username}
+                                className={classes.box}
                                 placeholder="type your username"
                             ></input>
                             <small className={classes.small}>* Email Also Accepted</small>
@@ -23,8 +23,9 @@ class Login extends Component{
                             <input 
                                 type="password" 
                                 id='password' 
-                                className={classes.password}
+                                className={classes.box}
                                 placeholder="type your password"
+                                autoComplete="true"
                             ></input>
                         </div>
                         <div className={classes.formGroup}>
