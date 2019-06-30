@@ -4,8 +4,9 @@ const path = require('path'),
     CompressionPlugin = require('compression-webpack-plugin'),
     ExtractTextPlugin = require('extract-text-webpack-plugin'),
     WebpackMessages = require('webpack-messages'),
+    MiniCssExtractPlugin = require('mini-css-extract-plugin'),
     UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
+process.env.NODE_ENV = 'development'
 const isEnvProduction = process.env.NODE_ENV === 'production' ? true : false;
 const isEnvDevelopment = process.env.NODE_ENV === 'development' ? true : false;
 
@@ -113,56 +114,92 @@ module.exports = {
                 },
             },
             {
-                test: /\.(png|svg|jpg|gif)$/,
+                test: /\.(ttf|woff|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                use: [{
+                    loader: require.resolve('file-loader'),
+                    options: {
+                        outputPath: 'assets',
+                        name: 'fonts/[name].[ext]'
+                    }
+                }]
+            },
+            {
+                test: /\.svg$/,
+                issuer:{
+                    test: /\.(scss|css|sass)$/
+                },
+                use: [{
+                    loader: require.resolve('file-loader'),
+                    options: {
+                        outputPath: 'assets',
+                        name: 'images/[name].[ext]'
+                    }
+                }]
+            },
+            {
+                test: /\.svg$/,
+                issuer:{
+                    test: /\.js$/
+                },
+                use: ['@svgr/webpack'],
+            },
+            {
+                test: /\.(png|jpg|gif)$/,
                 loader: require.resolve('file-loader'),
                 options: {
+                    outputPath: 'assets',
                     name: 'images/[name].[hash:8].[ext]',
                 },
             },
-
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                            loader: require.resolve('css-loader'),
-                            options: {
-                                modules: true,
-                                localIdentName: '[name]__[local]--[hash:base64:5]',
-                                importLoaders: 1
-                            }
-                        },
-                        {
-                            loader: require.resolve('postcss-loader')
+                use: [{
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            hmr: isEnvDevelopment
                         }
-                    ]
-                })
+                    },
+                    {
+                        loader: require.resolve('css-loader'),
+                        options: {
+                            modules: true,
+                            localIdentName: '[name]__[local]--[hash:base64:5]',
+                            importLoaders: 1
+                        }
+                    },
+                    {
+                        loader: require.resolve('postcss-loader')
+                    }
+                ]
             },
             {
                 test: /\.(sc|sa)ss$/,
-                exclude: /node_modules/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                            loader: require.resolve('css-loader'),
-                            options: {
-                                modules: true,
-                                localIdentName: '[name]__[local]--[hash:base64:5]',
-                                importLoaders: 2
-                            }
-                        },
-                        {
-                            loader: require.resolve('postcss-loader'),
-                            options: {
-                                ident: 'postcss'
-                            }
-                        },
-                        {
-                            loader: require.resolve("sass-loader")
+                exclude: /\.module\.(scss|sass)$/,
+                use: [{
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            hmr: isEnvDevelopment
                         }
-                    ]
-                })
-            },
+                    },
+                    {
+                        loader: require.resolve('css-loader'),
+                        options: {
+                            modules: true,
+                            localIdentName: '[name]__[local]--[hash:base64:5]',
+                            importLoaders: 2
+                        }
+                    },
+                    {
+                        loader: require.resolve('postcss-loader'),
+                        options: {
+                            ident: 'postcss'
+                        }
+                    },
+                    {
+                        loader: require.resolve("sass-loader")
+                    }
+                ]
+            }
         ]
     },
     plugins: [
@@ -183,6 +220,9 @@ module.exports = {
             logger: str => console.log(`>> ${str}`)
         }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new MiniCssExtractPlugin({
+            filename: 'stylesheets/[name].css'
+        })
     ].filter(Boolean),
     node: {
         module: 'empty',

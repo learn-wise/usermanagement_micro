@@ -1,6 +1,7 @@
 require('@babel/register')
 require.extensions['.scss'] = () => {};
 require.extensions['.css'] = () => {};
+require.extensions['.svg'] = () => {};
 require('dotenv').config()
 const app = require('./server/index');
 const http = require('http');

@@ -39,7 +39,7 @@ mongoose.connection
         console.log('☹️  '+chalk.redBright.bold('[AdminSection] Database is now disconnected,Please check DB connection'))
     })
     .on('error', () => {
-        console.log('😕  '+chalk.bgRed.whiteBright('[AdminSection] ERROR happened in DB connection'))
+        console.log('☹️  '+chalk.bgRed.whiteBright('[AdminSection] ERROR happened in DB connection'))
     })
 mongoose.set('useCreateIndex', true);
 // Middleware Configure
