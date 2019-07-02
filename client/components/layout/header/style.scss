@@ -1,6 +1,7 @@
 @import '../../scss/main.scss';
 
 .header {
+    grid-column: 1/-1;
     font-size: 3rem;
     display: flex;
     flex-direction: row;

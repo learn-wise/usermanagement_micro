@@ -1,7 +1,10 @@
+@import "../../scss/main.scss";
+
 .app_sidebar {
-    margin-top: -.9rem;
+    grid-column: 1/2;
+    font-family: $font-display;
     background: #fafbfc;
-    width: 20vw;
+    width: 17rem;
     position: sticky;
     box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
 
@@ -11,22 +14,23 @@
         font-size: 1.5rem;
         padding: 0 3rem;
         margin-left: 0rem;
+
+        &icon {
+            display: block;
+            background-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+
+            position: absolute;
+            margin-left: -2.5rem;
+            z-index: 1000;
+        }
     }
+
 }
 
 .parent {
     padding: 3rem 0rem;
-
-    &::before {
-        content: '';
-        background: url('../../../assets/icons/software_pen.svg');
-        position: absolute;
-        background-size: 2rem;
-        width: 2rem;
-        height: 2rem;
-        left: .5rem;
-        z-index: 1000;
-    }
 }
 
 .mainCat {
@@ -43,11 +47,12 @@
 }
 
 .sub {
+    transition: all .3s;
     list-style: none;
     margin-left: -1rem;
     &::before {
         content: '';
-        height: 62rem;
+        height:96%;
         opacity: 1;
         width: 3px;
         background: #e0f3ff;
@@ -62,7 +67,7 @@
         display: block;
         height: 2rem;
         margin-left: -2rem;
-        padding:.5rem .5rem;
+        padding: .5rem .5rem;
         position: relative;
         border-radius: .25rem;
         color: #495057;
@@ -73,15 +78,34 @@
         text-align: left;
         cursor: pointer;
         font-weight: 400;
-        font-size:1.3rem;
-        &:hover{
+        font-size: 1.3rem;
+
+        &:hover {
             background: #e0f3ff;
         }
     }
 }
 
-.board {}
+.board {
+    &ico {
+        background: url('../../../assets/icons/software_pen.svg');
+    }
+}
 
-.settings {}
+.settings {
+    &ico {
+        background: url('../../../assets/icons/software_pen.svg');
+    }
+}
 
-.projects {}
+.projects {
+    &ico {
+        background: url('../../../assets/icons/software_pen.svg');
+    }
+}
+
+.sections {
+    &ico {
+        background: url('../../../assets/icons/software_pen.svg');
+    }
+}

@@ -3,11 +3,10 @@ import { Route, Switch } from 'react-router-dom';
 import routes from './routes';
 import { hot } from 'react-hot-loader/root';
 import "./components/scss/main.scss";
-import Aux from './Hoc/wrapper';
 import Header from './components/layout/header';
 import Sidebar from './components/layout/sidebar';
 const Layout = () => (
-    <Aux>
+    <div style={{display:"grid",gridTemplateColumns:"min-content 1fr"}}>
       <Header/>
       <Sidebar/>
       <main>
@@ -15,7 +14,7 @@ const Layout = () => (
           {routes.map(route => <Route key={`route-${route.name}`} {...route} />)}
         </Switch>
       </main>
-    </Aux>
+    </div>
 );
 
 export default hot(Layout);
