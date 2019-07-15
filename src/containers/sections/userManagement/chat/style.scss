@@ -1,0 +1,151 @@
+@import '../../../../components/scss/main.scss';
+
+.scrollbar-container {}
+
+.card {
+    padding: 0;
+    border-radius: 0 0 .75rem .75rem;
+}
+
+.chat {
+    height: 10rem;
+
+    &-vertical-timeline {
+        width: 100%;
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 2rem;
+            height: 100%;
+            width: 4px;
+            background: #e9ecef;
+            border-radius: .25rem;
+        }
+    }
+
+    &-message {
+        padding: 1rem 0;
+
+        &::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    }
+
+    &-footer {
+        display: flex;
+        justify-content: center;
+        background-color: var(--white);
+        padding: .75rem 1.25rem;
+        border-top: 1px solid rgba(26, 54, 126, 0.125);
+        border-radius: 0 0 .75rem .75rem;
+        box-shadow: $box-shadow-primary
+    }
+
+    &-button {
+        position: relative;
+        display: inline-block;
+        padding: 1rem;
+        box-shadow: $button-shadow;
+        padding: .375rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        outline: none !important;
+        line-height: 1.5;
+        text-align: center;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        border-radius: 50px;
+        color: var(--white);
+        background-color: var(--focus);
+        border-color: var(--focus);
+        transition: color 0.15s,
+            background-color 0.15s,
+            border-color 0.15s;
+
+        &:hover {
+            color: var(--white);
+            background-color: #322f3e;
+            border-color: #2d2a37;
+            text-decoration: none;
+        }
+    }
+
+}
+
+.message {
+    position: relative;
+    margin: 0 0 .5rem;
+
+    &-badge {
+        margin-left: 8px;
+        text-indent: -999em;
+        border-radius: 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+        min-width: 2px;
+        padding: 0;
+
+        &-dot {
+            position: absolute;
+            border: #fff solid 2px;
+            top: -5px;
+            right: -5px;
+            width: 14px;
+            height: 14px;
+        }
+
+        &-warring {
+            color: #212529;
+            background-color: #f7b924;
+        }
+    }
+
+    &-ico {
+        visibility: visible;
+        height: 14px;
+        width: 14px;
+        position: absolute;
+        left: 1.5rem;
+        top: 0;
+        display: block;
+        border-radius: 20px;
+
+        &::after {
+            content: '';
+            position: absolute;
+            background: var(--white);
+            left: 50%;
+            top: 50%;
+            margin: -4px 0 0 -4px;
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 20px;
+        }
+
+    }
+
+    &-content {
+        margin-left: 36px;
+        font-size: .8rem;
+
+        &::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    }
+
+    &-title {
+        text-transform: none;
+        padding: 0;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+}
