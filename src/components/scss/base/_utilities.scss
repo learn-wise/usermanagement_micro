@@ -1,0 +1,23 @@
+.card{
+    box-shadow: $box-shadow-primary;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(26, 54, 126, 0.125);
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+.badge {
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem
+}
