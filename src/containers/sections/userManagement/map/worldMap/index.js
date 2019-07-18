@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import { VectorMap } from "react-jvectormap";
-
+import classes from './style.scss'
 /* TODO MAP
   * by each click on regions show (today visitors|users|total visitors)
   * show online and visitors by markers on map
@@ -66,12 +66,15 @@ class Map extends Component{
                 onRegionSelected={onRegionSelected}
                 onMarkerSelected={onMarkerSelected}
                 onRegionClick={handleClick} //gets the country code
-                containerClassName="map"
+                containerClassName={classes.map}
                 zoomAnimate={true}
                 markerStyle={{
                     initial: {
                         fill: '#F8E23B',
                         stroke: '#383f47'
+                    },
+                    hover: {
+                      cursor:"pointer"
                     },
                     selected: {
                         fill: '#CA0020'
@@ -87,11 +90,10 @@ class Map extends Component{
                   },
                   hover: {
                     "fill-opacity": 0.8,
-                    cursor: "pointer",
-                    "box-shdow":"1rem 1rem 1rem 1rem #ccc"
+                    cursor: "pointer"
                   },
                   selected: {
-                    fill: "#2938bc",
+                    fill: "#2938bc" //color for the clicked country
                   },
                   selectedHover: {}
                 }}

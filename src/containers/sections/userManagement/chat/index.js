@@ -17,9 +17,9 @@ class ChatNotification extends Component {
   }
 
   mainChat=()=>{
-    const Notification=[ {num:'1'}, {num:'2'}, {num:'3'}, {num:'4'}, {num:'5'}, {num:'6'}, {num:'7'}, {num:'8'}, {num:'9'}, {num:'10'} ]
+    const Notification=[ {num:'1'}, {num:'2'}, {num:'3'}, {num:'4'}, {num:'5'}, {num:'6'}, {num:'7'}, {num:'8'}, {num:'9'}, {num:'10'}, {num:'1'}, {num:'1'}, {num:'1'}, {num:'1'}, ]
     return Notification.map(noti=>(
-      <div className={cn(["message"])} key={noti.num}>
+      <div className={cn(["message"])} key={Math.random()*124*Math.random()}>
         <span 
         className={cn(["message-ico"])} 
         style={{
