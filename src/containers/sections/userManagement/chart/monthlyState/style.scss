@@ -1,0 +1,35 @@
+.monthlyState {
+    &-Container {
+        position: relative;
+        overflow: hidden;
+    }
+}
+
+.slick {
+    &-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: block;
+        height: 40px;
+        width: 40px;
+        cursor: pointer;
+        color: #6c757d;
+        border: none;
+        outline: none;
+        box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+        transition: all .2s;
+        border-radius: 50px;
+        background: #fff;
+        z-index: 6;
+        overflow: hidden;
+    }
+
+    &-next {
+        right: -3rem;
+    }
+
+    &-prev {
+        left: 1rem;
+    }
+}
