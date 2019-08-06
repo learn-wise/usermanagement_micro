@@ -4,7 +4,7 @@ import cl from '../../../Hoc/multiclass'
 import { Link } from 'react-router-dom';
 class sidebar extends Component{
     consol=()=>{
-        console.log('ok')
+        // console.log('ok')
     }
     render(){
         function cn(elem){ return cl(elem,classes) }

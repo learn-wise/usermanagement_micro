@@ -2,7 +2,19 @@ import React, { Component } from "react";
 import Chart from "react-apexcharts";
 import classes from './style.scss';
 import cl from '../../../../../../Hoc/multiclass';
+import moment from 'moment';
 function cn(elem) { return cl(elem, classes); }
+function getDaysArrayByMonth(month) {
+  var daysInMonth = moment().daysInMonth(month);
+  var arrDays = [];
+
+  while(daysInMonth) {
+    var current = moment().date(daysInMonth).format("DD");
+    arrDays.push(current);
+    daysInMonth--;
+  }
+  return arrDays.reverse();
+}
 class MonthlyUsersState extends Component {
   constructor(props) {
     super(props);
@@ -66,8 +78,8 @@ class MonthlyUsersState extends Component {
   }
   series=()=>{
     return [
-      {name: "Jun", data: [30, 60, 100, 15, 25, 28, 38, 46]},
-      { name: "July", data: [20, 29, 37, 36, 44, 45, 50, 58] } 
+      {name: "Jun", data: [30, 60, 100, 15, 25, 28, 38, 46,48,49]},
+      { name: "July", data: [20, 29, 37] } 
     ]
   }
 
@@ -75,16 +87,21 @@ class MonthlyUsersState extends Component {
     return{
       toolbar: { show: true },
       events:{ 
-        beforeMount:(chartContext, config)=>{ console.log('beforeMounted') },
-        mounted:(chartContext, config)=>{ console.log('Mounted') }
+        beforeMount:(chartContext, config)=>{
+          //  console.log('beforeMounted')
+           },
+        mounted:(chartContext, config)=>{
+          //  console.log('Mounted') 
+          }
       },
       height: 100,
     }
   }
 
   xaxis=()=>{
+    let categories = getDaysArrayByMonth('Aguest')
     return {
-      categories: [ "01", "02", "03", "04", "05", "06", "07", "08" ],
+      categories,
       labels:{ 
         show:true, 
         style:{ 

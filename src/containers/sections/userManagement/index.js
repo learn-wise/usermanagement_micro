@@ -4,15 +4,23 @@ import classes from "./style.scss";
 import WorldMap from "./map/worldMap";
 import { ProgressBar } from "react-bootstrap";
 import ChatNotification from './chat'
-import MicroState from "./chart/microState";
-import MonthlyState from './chart/monthlyState'
-
+import MonthlyState from './chart/monthlyState';
+import UsersList from './table/usersList';
+import { 
+  OnlineUsers,
+  OnlineVisitors,
+  TotalUsers,
+  TotalVisitors,
+  NewUsers,
+  VerifiedUsers
+} from './chart/microState/main'
 class UserManagement extends Component {
+  // Socket is accessible from:: this.props.socket
+
   constructor(props){
     super(props)
     this.state={}
   }
-  onlineUsers = () => { return 1000; }; 
   onlineVisitors = () => { return 5000; }; 
   totalUsers = () => { return 150436; }; 
   totalVisitors = () => { return 64481231; }; 
@@ -34,49 +42,34 @@ class UserManagement extends Component {
       );
     });
   };
-
   render() {
     function cn(elem) { return cl(elem, classes); }
     return (
       <div className={cn(["userManagement"])}>
 
         <div className={cn(["users-Online","card"])}>
-          <h3>online Users</h3>
-          <div>{this.onlineUsers()}</div>
-          <MicroState type="online_users" color="#4caf50"/>
+          <OnlineUsers socket={this.props.socket}/>
         </div>
 
         <div className={cn(["visitors-Online","card"])}>
-          <h3>online visitors</h3>
-          <div>{this.onlineVisitors()}</div>
-          <MicroState type="online_visitors" color="#D7263D"/>
+          <OnlineVisitors socket={this.props.socket}/>
         </div>
 
         <div className={cn(["section-Count"])}>
           <div className={cn(["users-Count","card"])}>
-            <h3>Total users</h3> 
-            <div>{this.totalUsers()}</div>
-            <MicroState type="users_count" color="#00B1F2"/>
+            <TotalUsers socket={this.props.socket}/>
           </div>
 
           <div className={cn(["visitors-Count","card"])}>
-            <h3>Total visitors</h3> 
-            <div>{this.totalVisitors()}</div>
-            <MicroState type="visitors_count" color="#F9C80E"/>
-
+            <TotalVisitors socket={this.props.socket}/>
           </div>
 
           <div className={cn(["users-New","card"])}>
-            <h3>New users</h3> 
-            <div>{this.newUsers()}</div>
-            <MicroState type="users_New" color="#5A2A27"/>
-
+            <NewUsers socket={this.props.socket}/>
           </div>
 
           <div className={cn(["users-Verified","card"])}>
-            <h3>Verified users</h3> 
-            <div>{this.verifiedUsers()}</div>
-            <MicroState type="users_verified" color="#662E9B"/>
+            <VerifiedUsers socket={this.props.socket}/>
           </div>
 
         </div>
@@ -94,7 +87,9 @@ class UserManagement extends Component {
           <MonthlyState/>
         </div>
 
-        <div className={cn(["section-UsersList","card"])}>usersList</div>
+        <div className={cn(["section-UsersList","card"])}>
+          <UsersList/>
+        </div>
       </div>
     );
   }

@@ -1,5 +1,8 @@
+@import "../../../../../components/scss/main.scss";
+@include spinner1(rgba(#262626,.5),.8rem,calc(4.9rem + (7 - 5)*(100vw - 400px)/(1200 - 400)));
 .microState{
     position: relative;
+    margin-bottom: 1rem;
 }
 .tooltip{
     width:100%;

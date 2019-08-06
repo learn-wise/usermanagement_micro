@@ -23,3 +23,64 @@
     border-radius: 0.25rem;
     padding: 1rem;
 }
+
+@mixin selectorBox {
+    font-size: 1.2rem;
+    width: 40%;
+    padding: .375rem 1.75rem .375rem .75rem;
+    font-weight: 400;
+    color: #495057;
+    vertical-align: middle;
+    background:
+        url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    margin: 0 .4rem;
+}
+
+@mixin spinner1($color, $size,$height) {
+
+    .loader,
+    .loader:before,
+    .loader:after {
+        background: $color;
+        -webkit-animation: load1 1s infinite ease-in-out;
+        animation: load1 1s infinite ease-in-out;
+        width: 1rem;
+        height: 2rem;
+    }
+
+    .loader {
+        color: $color;
+        text-indent: -9999em;
+        margin: $height auto;
+        position: relative;
+        font-size: $size;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+    .loader:before,
+    .loader:after {
+        position: absolute;
+        top: 0;
+        content: '';
+    }
+
+    .loader:before {
+        left: -1.5em;
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    .loader:after {
+        left: 1.5em;
+    }
+}

@@ -2,7 +2,7 @@
 
 .userManagement {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(16rem,1fr));
     align-items: center;
     grid-gap: 1rem;
     padding: 1rem;
@@ -22,7 +22,8 @@
         }
 
         &-UsersList {
-            background: darkgoldenrod;
+            // background: darkgoldenrod;
+            padding:0;
             grid-column: 1 / span 6;
             grid-row: 4 / 5;
         }
@@ -36,6 +37,7 @@
             // background: darkslategrey;
             grid-column: 3 / span 4;
             grid-row: 3 / 4;
+            overflow: hidden;
         }
 
         &-MapStatistic {
@@ -75,26 +77,27 @@
             height: 100%;
             grid-column: 1 / 2;
             border-bottom: 2px solid #4caf50;
-
+            padding: 0;
         }
 
         &-Count {
             flex: 1 100%;
             margin-right: 1rem;
             border-bottom: 2px solid #00B1F2;
+            padding: 0;
         }
 
         &-New {
             flex: 1 100%;
             margin-right: 1rem;
             border-bottom: 2px solid #5A2A27;
-
+            padding: 0;
         }
 
         &-Verified {
             flex: 1 100%;
             border-bottom: 2px solid #662E9B;
-
+            padding: 0;
         }
 
         &-Distribution {
@@ -111,14 +114,14 @@
         &-Online {
             grid-column: 2 / 3;
             border-bottom: 2px solid #D7263D;
-
+            padding: 0;
         }
 
         &-Count {
             flex: 1 100%;
             margin-right: 1rem;
             border-bottom: 2px solid #F9C80E;
-
+            padding: 0;
         }
     }
 }

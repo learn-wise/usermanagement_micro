@@ -75,8 +75,12 @@ class MonthlyVisitorsState extends Component {
     return{
       toolbar: { show: true },
       events:{ 
-        beforeMount:(chartContext, config)=>{ console.log('beforeMounted') },
-        mounted:(chartContext, config)=>{ console.log('Mounted') }
+        beforeMount:(chartContext, config)=>{ 
+          // console.log('beforeMounted')
+         },
+        mounted:(chartContext, config)=>{ 
+          // console.log('Mounted') 
+        }
       },
       height: 100,
     }

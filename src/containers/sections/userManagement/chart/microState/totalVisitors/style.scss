@@ -1,0 +1,43 @@
+.conatiner {
+}
+.header {
+    background: rgba(#F9C80E, 1);
+    padding: .5rem 1rem;
+    text-transform: capitalize;
+    font-weight: 400;
+    font-family:'Signika';
+    color: #fff;
+}
+.counter_section{
+    display: grid;
+    grid-template-columns:minmax(7rem,1fr);
+    justify-items: center;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 0rem 1rem;
+}
+.counter {
+    grid-column: 1/3;
+    grid-row: 1/3;
+    font-size:3rem;
+    justify-self: left;
+    font-family:'Signika';
+    color: rgba(#262626,.7);
+}
+
+.arrow {
+    &_up {
+        grid-column:2/3;
+        grid-row: 1/2;
+        visibility: hidden;
+    }
+
+    &_down {
+        grid-column:2/3;
+        grid-row: 2/3;
+        visibility: hidden;
+    }
+}
+.visible{
+    visibility: visible;
+}

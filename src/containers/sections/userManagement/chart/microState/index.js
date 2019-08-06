@@ -12,7 +12,7 @@ function getDaysArrayByMonth() {
       daysInMonth--;
     }
     return arrDays.reverse();
-  }
+}
 class MicroState extends Component{
     constructor(props){
         super(props)
@@ -53,12 +53,7 @@ class MicroState extends Component{
         }
 
     }
-    series=()=>{
-        return[{
-            name: "visitors",
-            data: [70, 41, 35, 51, 20, 62, 69, 10, 30,10, 41, 35, 51, 20, 62, 69, 10, 30,20, 62, 69, 10, 30,10, 41, 35 ]
-        }]
-    };
+
     tooltip=()=>{
         let custom = ({series, seriesIndex, dataPointIndex, w})=>{
             const categories = getDaysArrayByMonth()
@@ -85,17 +80,23 @@ class MicroState extends Component{
         const {chart,dataLabels,xaxis,theme,stroke,grid}=this.state;
         return { chart, dataLabels, xaxis, tooltip:this.tooltip(), theme, stroke, grid }
     }
+    chart = ()=>{
+        if(this.props.series){
+            return  <Chart
+            options={this.options()}
+            height="120px"
+            width="100%"
+            series={this.props.series}
+            type="area"
+        />
+        }else{
+            return <div className={classes.loader}>Loading...</div>
+        }
+    }
     render(){
         return(
             <div className={classes.microState}>
-                MicroState({this.props.type})
-                <Chart
-                    options={this.options()}
-                    height="120px"
-                    width="100%"
-                    series={this.series()}
-                    type="area"
-                />
+                {this.chart()}
             </div>
         )
     }

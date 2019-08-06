@@ -6,3 +6,6 @@ html{
 .rounded_circle {
     border-radius: 50% !important;
 }
+a:active, a:focus {
+    outline: 0;
+}
