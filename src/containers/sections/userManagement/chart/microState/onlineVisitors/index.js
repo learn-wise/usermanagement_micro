@@ -16,7 +16,28 @@ class OnlineVisitors extends Component{
             decrease:false
         }
     }
+    componentWillMount(){
+        const visitorsSocket = this.props.socket('visitors')
+        visitorsSocket.on('connect_error',(err)=>{ 
+            if(err){ this.setState({error:'socket server is down'}) }
+        })
+        
+        visitorsSocket.on('onlineVisitorsCount',count=>{
+            if(!count){return null}
+            let prevCount = +this.state.statistic.onlinesCount;
+            let nexCount = +count.onlinesCount;
+            if(prevCount<nexCount){ this.setState({increase:true,decrease:false}) }
+            if(prevCount>nexCount){ this.setState({decrease:true,increase:false}) }
+            let statistic= { ...this.state.statistic, ...count }
+            this.setState({statistic})
+        })
 
+        visitorsSocket.on('onlineVisitorsInitial',count=>{
+            if(!count){return null}
+            let statistic= { ...this.state.statistic, ...count }
+            this.setState({statistic})
+        })
+    }
     arrowDownHandler=()=>{
         let classArray = [classes.arrow_down]
         if(this.state.decrease){

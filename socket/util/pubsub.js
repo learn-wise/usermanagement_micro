@@ -1,6 +1,6 @@
 const Redis = require('redis')
-const subscriber = Redis.createClient();
-const publisher  = Redis.createClient();
+const subscriber = Redis.createClient({ retry_strategy: () => 1000 }).setMaxListeners(100);
+const publisher  = Redis.createClient({ retry_strategy: () => 1000 }).setMaxListeners(100);
 
 const pubSubClass = class PubSub {
     publish(channel, message) {
