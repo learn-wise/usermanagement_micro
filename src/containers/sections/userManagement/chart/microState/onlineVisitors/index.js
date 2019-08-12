@@ -3,6 +3,8 @@ import MicroState from '../index';
 import classes from './style.scss';
 import {ReactComponent as DownArrow} from '../../../../../../assets/icons/arrows_down_double.svg'
 import {ReactComponent as UpArrow} from '../../../../../../assets/icons/arrows_up_double.svg'
+import moment from 'moment';
+
 class OnlineVisitors extends Component{
     constructor(props){
         super(props)
@@ -11,6 +13,7 @@ class OnlineVisitors extends Component{
                 onlinesCount:0,
                 diffCount:0
             },
+            chartData:null,
             error:null,
             increase:false,
             decrease:false
@@ -37,6 +40,28 @@ class OnlineVisitors extends Component{
             let statistic= { ...this.state.statistic, ...count }
             this.setState({statistic})
         })
+        visitorsSocket.on('onlineVisitorsTList',list=>{
+            if(!list){ return null }
+            let chartData = list;
+            let resultData = [];
+            let current_Month = moment().format('MM');
+            let current_Day   = moment().format('D');
+            let current_Year  = moment().format('YYYY');
+            // let Days_Of_Month = moment().daysInMonth()
+            let i = 0;
+            // let j = +current_Day;
+    
+            while(i < current_Day){
+                let specificDay =  `${current_Year}/${current_Month}/${i+1}`;
+                chartData[specificDay] === undefined
+                ?resultData[i] = 0
+                :resultData[i] = chartData[specificDay];
+                i++
+            }
+    
+            // while(j<Days_Of_Month){ resultData[j] = 0; j++ }
+            this.setState({chartData:[{data:resultData}]})
+        })
     }
     arrowDownHandler=()=>{
         let classArray = [classes.arrow_down]
@@ -52,9 +77,6 @@ class OnlineVisitors extends Component{
         }
         return classArray.join(' ')
     }
-    series=()=>{
-        return[{ data: [70, 41, 35, 51, 20, 62, 69, 10, 30,10, 41, 35, 51, 20, 62, 69, 10, 30,20, 62, 69, 10, 30,10, 41, 35,27,28,29,30 ] }]
-    };
     render(){
         return(
             <div className={classes.container}>
@@ -70,7 +92,10 @@ class OnlineVisitors extends Component{
                         <DownArrow width="15px" height="15px"/>
                     </span>
                 </div>
-                <MicroState type="online_visitors" color="#D7263D" series={this.series()}/>
+                <MicroState 
+                    type="online_visitors" 
+                    color="#D7263D" 
+                    series={this.state.chartData}/>
             </div>
         )
     }

@@ -11,7 +11,8 @@ let {
   ONLINES_TOTAL_LIST,
   ONLINES_LIST,
   ONLINE_VISITORS,
-  ONLINE_VISITORS_INITIAL
+  ONLINE_VISITORS_INITIAL,
+  ONLINES_TOTAL_VISI_LIST
 } = require('./actionTypes');
 
 redis.on('ready',()=>{ 
@@ -20,6 +21,7 @@ redis.on('ready',()=>{
 
 PubSub.subscribe("__keyevent@0__:sadd")
 PubSub.subscribe("__keyevent@0__:incrby")
+PubSub.subscribe("__keyevent@0__:hset")
 
 Onlines.users =(socket)=> {
   const Day                 = moment().format('YYYY/MM/D'),
@@ -29,7 +31,6 @@ Onlines.users =(socket)=> {
 
   // online counter
   PubSub.on("message", (channel, message) => {
-    console.log(message)
     if (message === online_Users_Count) {
       redis.get(message, (err, reply) => { 
         socket.emit(USERS_ONLINE,{onlinesCount:+reply}) 
@@ -62,13 +63,24 @@ Onlines.users =(socket)=> {
 
 Onlines.visitors = (socket)=> {
 
-  const online_Visitors = 'online:count'
+  const Day                    = moment().format('YYYY/MM/D'),
+    online_Visitors            = 'online:count',
+    online_Visitors_List       = `online:visitors:Clist:${Day}`,
+    online_Visitors_Total_List = 'online:visitors:TList';
 
   PubSub.on("message", async (channel, message) => {
+    console.log(message)
     if(message === online_Visitors){
-      console.log(message)
       redis.get(online_Visitors,(err,reply)=>{
         socket.emit(ONLINE_VISITORS,{onlinesCount:reply})
+      })
+    }
+    
+    if(message === online_Visitors_List){
+      redis.hincrby( online_Visitors_Total_List , Day , 1 ,(err,result)=>{
+        redis.hgetall(online_Visitors_Total_List,(err,reply)=>{
+          socket.emit(ONLINES_TOTAL_VISI_LIST,reply)
+        })
       })
     }
   })
