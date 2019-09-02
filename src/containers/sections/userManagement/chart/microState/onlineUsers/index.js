@@ -50,9 +50,9 @@ class OnlineUsers extends Component{
             let current_Month = moment().format('MM');
             let current_Day   = moment().format('D');
             let current_Year  = moment().format('YYYY');
-            // let Days_Of_Month = moment().daysInMonth()
+            let Days_Of_Month = moment().daysInMonth()
             let i = 0;
-            // let j = +current_Day;
+            let j = +current_Day;
     
             while(i < current_Day){
                 let specificDay =  `${current_Year}/${current_Month}/${i+1}`;
@@ -62,7 +62,7 @@ class OnlineUsers extends Component{
                 i++
             }
     
-            // while(j<Days_Of_Month){ resultData[j] = 0; j++ }
+            while(j<Days_Of_Month){ resultData[j] = 0; j++ }
             this.setState({chartData:[{data:resultData}]})
         })
 
@@ -97,7 +97,6 @@ class OnlineUsers extends Component{
         return classArray.join(' ')
     }
     render(){
-        
         return(
             <div className={classes.container}>
                 <h5 className={classes.header}>online Users</h5>

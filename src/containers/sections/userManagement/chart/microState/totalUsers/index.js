@@ -3,6 +3,8 @@ import MicroState from '../index';
 import classes from './style.scss';
 import {ReactComponent as DownArrow} from '../../../../../../assets/icons/arrows_down_double.svg'
 import {ReactComponent as UpArrow} from '../../../../../../assets/icons/arrows_up_double.svg'
+import  { graphql } from 'react-apollo'
+import userCountQuery from '../../../../../../Graphql/queries/usersCount'
 class TotalUsers extends Component{
     constructor(props){
         super(props)
@@ -16,7 +18,6 @@ class TotalUsers extends Component{
             decrease:false
         }
     }
-
     arrowDownHandler=()=>{
         let classArray = [classes.arrow_down]
         if(this.state.decrease){
@@ -34,13 +35,15 @@ class TotalUsers extends Component{
     series=()=>{
         return[{ data: [70, 41, 35, 51, 20, 62, 69, 10, 30,10, 41, 35, 51, 20, 62, 69, 10, 30,20, 62, 69, 10, 30,10, 41, 35,27,28,29,30 ] }]
     };
+    initialCount =()=>this.props.data.usersCount ? this.props.data.usersCount.count : 0;
     render(){
+        
         return(
             <div className={classes.container}>
                 <h5 className={classes.header}>Total users</h5>
                 <div className={classes.counter_section}>
                     <span className={classes.counter}>
-                    {this.state.statistic.TotalsCount}
+                    {this.initialCount()}
                     </span>
                     <span className={this.arrowUpHandler()}>
                         <UpArrow width="15px" height="15px"/>
@@ -49,10 +52,13 @@ class TotalUsers extends Component{
                         <DownArrow width="15px" height="15px"/>
                     </span>
                 </div>
-                <MicroState type="users_count" color="#00B1F2" series={this.series()}/>
+                <MicroState 
+                    type="users_count" 
+                    color="#00B1F2" 
+                    series={this.series()}/>
             </div>
         )
     }
 }
 
-export default TotalUsers;
+export default graphql(userCountQuery)(TotalUsers);

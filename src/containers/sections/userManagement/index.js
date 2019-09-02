@@ -11,7 +11,7 @@ import {
   OnlineVisitors,
   TotalUsers,
   TotalVisitors,
-  NewUsers,
+  // NewUsers,
   VerifiedUsers
 } from './chart/microState/main'
 class UserManagement extends Component {
@@ -64,9 +64,9 @@ class UserManagement extends Component {
             <TotalVisitors socket={this.props.socket}/>
           </div>
 
-          <div className={cn(["users-New","card"])}>
+          {/* <div className={cn(["users-New","card"])}>
             <NewUsers socket={this.props.socket}/>
-          </div>
+          </div> */}
 
           <div className={cn(["users-Verified","card"])}>
             <VerifiedUsers socket={this.props.socket}/>

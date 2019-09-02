@@ -14,5 +14,11 @@ usersSocket.on('connection', (socket) => {
 visitorsSocket.on('connection', (socket) => {
   onlinesCounter.visitors(socket)
 });
+
+io.on('connection', (socket) => {
+  onlinesCounter.connect()
+  socket.on('disconnect', (reason) => { onlinesCounter.disconnect() });
+});
+
 io.listen(8000);
 console.log('Socket Server listening on port::', 8000);

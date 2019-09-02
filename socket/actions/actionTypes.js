@@ -9,6 +9,6 @@ module.exports={
 
     ONLINE_VISITORS :           "onlineVisitorsCount",
     ONLINE_VISITORS_INITIAL:    "onlineVisitorsInitial",
-    ONLINES_TOTAL_VISI_LIST :   "onlineVisitorsTList"
+    ONLINES_TOTAL_VISIT_LIST :   "onlineVisitorsTList"
 
 } 

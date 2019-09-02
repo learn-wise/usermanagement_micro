@@ -36,7 +36,7 @@ class OnlineVisitors extends Component{
         })
 
         visitorsSocket.on('onlineVisitorsInitial',count=>{
-            if(!count){return null}
+            if(!count.onlinesCount){ count ={onlinesCount:0} }
             let statistic= { ...this.state.statistic, ...count }
             this.setState({statistic})
         })
@@ -47,9 +47,9 @@ class OnlineVisitors extends Component{
             let current_Month = moment().format('MM');
             let current_Day   = moment().format('D');
             let current_Year  = moment().format('YYYY');
-            // let Days_Of_Month = moment().daysInMonth()
+            let Days_Of_Month = moment().daysInMonth()
             let i = 0;
-            // let j = +current_Day;
+            let j = +current_Day;
     
             while(i < current_Day){
                 let specificDay =  `${current_Year}/${current_Month}/${i+1}`;
@@ -59,7 +59,7 @@ class OnlineVisitors extends Component{
                 i++
             }
     
-            // while(j<Days_Of_Month){ resultData[j] = 0; j++ }
+            while(j<Days_Of_Month){ resultData[j] = 0; j++ }
             this.setState({chartData:[{data:resultData}]})
         })
     }

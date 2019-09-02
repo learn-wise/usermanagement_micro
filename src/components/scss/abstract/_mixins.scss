@@ -51,20 +51,24 @@
         -webkit-animation: load1 1s infinite ease-in-out;
         animation: load1 1s infinite ease-in-out;
         width: 1rem;
-        height: 2rem;
+        height: 1rem;
     }
 
     .loader {
         color: $color;
         text-indent: -9999em;
-        margin: $height auto;
-        position: relative;
+        // margin: $height auto;
+
+        position: absolute;
         font-size: $size;
         -webkit-transform: translateZ(0);
         -ms-transform: translateZ(0);
         transform: translateZ(0);
         -webkit-animation-delay: -0.16s;
         animation-delay: -0.16s;
+        top:50%;
+        left:50%;
+        transform: translate(-50%,-50%);
     }
 
     .loader:before,
