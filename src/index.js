@@ -19,7 +19,7 @@ const client = new ApolloClient({
    cache: new InMemoryCache({dataIdFromObject:o=>o.id}),
  });
 
-const socket= (nameSpace)=> io(`http://localhost:8000/${nameSpace}`,{transports: ['websocket']})
+const socket= (nameSpace)=> io(`http://localhost:8000/${nameSpace}`,{ transports: ['websocket'], upgrade:false })
 ReactDOM.render(
    <ApolloProvider client={client}>
       <BrowserRouter>

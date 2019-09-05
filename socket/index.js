@@ -1,6 +1,5 @@
 const io = require('socket.io')();
 const onlinesCounter = require('./actions/onlinesCounter')
-
 // const redisAdapter = require('socket.io-redis');
 // io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
 
@@ -16,8 +15,15 @@ visitorsSocket.on('connection', (socket) => {
 });
 
 io.on('connection', (socket) => {
+
+  console.log('socket connected...')
   onlinesCounter.connect()
-  socket.on('disconnect', (reason) => { onlinesCounter.disconnect() });
+
+  socket.on('disconnect', (reason) => { 
+    console.log('socket disconnected...')
+    onlinesCounter.disconnect()
+  });
+  
 });
 
 io.listen(8000);

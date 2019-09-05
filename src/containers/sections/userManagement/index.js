@@ -10,13 +10,10 @@ import {
   OnlineUsers,
   OnlineVisitors,
   TotalUsers,
-  TotalVisitors,
-  // NewUsers,
   VerifiedUsers
 } from './chart/microState/main'
 class UserManagement extends Component {
   // Socket is accessible from:: this.props.socket
-
   constructor(props){
     super(props)
     this.state={}
@@ -44,35 +41,31 @@ class UserManagement extends Component {
   };
   render() {
     function cn(elem) { return cl(elem, classes); }
+    const usersSocket    = this.props.socket('users')
+    const visitorsSocket = this.props.socket('visitors')
     return (
       <div className={cn(["userManagement"])}>
 
-        <div className={cn(["users-Online","card"])}>
-          <OnlineUsers socket={this.props.socket}/>
-        </div>
-
-        <div className={cn(["visitors-Online","card"])}>
-          <OnlineVisitors socket={this.props.socket}/>
-        </div>
-
         <div className={cn(["section-Count"])}>
+
+          <div className={cn(["users-Online","card"])}>
+            <OnlineUsers socket={usersSocket}/>
+          </div>
+
+          <div className={cn(["visitors-Online","card"])}>
+            <OnlineVisitors socket={visitorsSocket}/>
+          </div>
+
           <div className={cn(["users-Count","card"])}>
-            <TotalUsers socket={this.props.socket}/>
+            <TotalUsers socket={usersSocket}/>
           </div>
-
-          <div className={cn(["visitors-Count","card"])}>
-            <TotalVisitors socket={this.props.socket}/>
-          </div>
-
-          {/* <div className={cn(["users-New","card"])}>
-            <NewUsers socket={this.props.socket}/>
-          </div> */}
 
           <div className={cn(["users-Verified","card"])}>
-            <VerifiedUsers socket={this.props.socket}/>
+            <VerifiedUsers socket={usersSocket}/>
           </div>
-
+          
         </div>
+
         <div className={cn(["users-Distribution","card"])}>
           <WorldMap />
         </div>

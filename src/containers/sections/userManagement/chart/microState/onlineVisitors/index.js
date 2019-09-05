@@ -20,7 +20,7 @@ class OnlineVisitors extends Component{
         }
     }
     componentWillMount(){
-        const visitorsSocket = this.props.socket('visitors')
+        const visitorsSocket = this.props.socket;
         visitorsSocket.on('connect_error',(err)=>{ 
             if(err){ this.setState({error:'socket server is down'}) }
         })

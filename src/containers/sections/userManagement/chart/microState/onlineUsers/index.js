@@ -20,7 +20,7 @@ class OnlineUsers extends Component{
         }
     }
     componentWillMount(){
-        const usersSocket = this.props.socket('users')
+        const usersSocket = this.props.socket
         usersSocket.on('connect_error',(err)=>{ 
             if(err){ this.setState({error:'socket server is down'}) }
         })

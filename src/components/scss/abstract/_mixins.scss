@@ -43,48 +43,77 @@
 }
 
 @mixin spinner1($color, $size,$height) {
-
-    .loader,
-    .loader:before,
-    .loader:after {
+    %general {
         background: $color;
         -webkit-animation: load1 1s infinite ease-in-out;
         animation: load1 1s infinite ease-in-out;
         width: 1rem;
         height: 1rem;
     }
-
     .loader {
         color: $color;
         text-indent: -9999em;
-        // margin: $height auto;
-
         position: absolute;
         font-size: $size;
-        -webkit-transform: translateZ(0);
-        -ms-transform: translateZ(0);
-        transform: translateZ(0);
-        -webkit-animation-delay: -0.16s;
         animation-delay: -0.16s;
         top:50%;
         left:50%;
         transform: translate(-50%,-50%);
+        @extend %general;
+        &:before,
+        &:after {
+            position: absolute;
+            top: 0;
+            content: '';
+            @extend %general;
+        }
+        &:before {
+            left: -1.5em;
+            animation-delay: -0.32s;
+        }
+        &:after {
+            left: 1.5em;
+        }
     }
 
-    .loader:before,
-    .loader:after {
-        position: absolute;
-        top: 0;
-        content: '';
-    }
-
-    .loader:before {
-        left: -1.5em;
-        -webkit-animation-delay: -0.32s;
-        animation-delay: -0.32s;
-    }
-
-    .loader:after {
-        left: 1.5em;
-    }
+  
 }
+
+@mixin spinner2($color,$top,$size) {
+    %general {
+        border-radius: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        animation-fill-mode: both;
+        animation: load7 1.8s infinite ease-in-out;
+    }
+    
+    .loader {
+        color: $color;
+        font-size: $size;
+        margin: $top auto;
+        position: relative;
+        text-indent: -9999em;
+        transform: translate3d(-50%,-50%,0);
+        animation-delay: -0.16s;
+        @extend %general;
+        &:before,
+        &:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            @extend %general;
+        }
+    
+        &:before {
+            left: -3.5em;
+            animation-delay: -0.32s;
+        }
+    
+        &:after {
+            left: 3.5em;
+        }
+    }
+    
+}
+

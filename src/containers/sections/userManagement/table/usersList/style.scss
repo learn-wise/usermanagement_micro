@@ -1,6 +1,6 @@
 // External styleSheets
 @import '../../../../../components/scss/main.scss';
-
+@include spinner2(#262626,18rem,1rem);
 .card {
     &-container {
         padding: 1.25rem;

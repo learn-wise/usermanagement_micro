@@ -12,7 +12,7 @@ class UsersList extends Component {
     this.state={
       usersList:{
         show:10,
-        filter:null,
+        filter:'Recently Login',
         search:null,
         Users:[],
         hasNextPage:false,
@@ -23,7 +23,8 @@ class UsersList extends Component {
         errorMessage:null
       },
       updateList:false,
-      errors:null
+      errors:null,
+      loading:true
     }
   }
 
@@ -33,20 +34,28 @@ class UsersList extends Component {
       variables: {show,filter,search,page:currentPage} 
     })
     .catch(e=>{
-      const errors = e.graphQLErrors.map(err=>err.message);
-      this.stateHandler('errorMessage',errors)
+      const stateHandler = {
+        ...this.state.usersList,
+        updateList:false,
+        errors:e.message
+      }
+      this.setState(stateHandler)
     })
     .then(({data})=>{
-      let updatedState = { usersList:data.usersList }
-      if(isUpdate){ updatedState.updateList = false }
-      this.setState(updatedState)
+      let usersList = {
+        ...data.usersList,
+        filter:this.state.usersList.filter
+      }
+      let stateHandler = { usersList, errors:null,loading:false }
+      if(isUpdate){ stateHandler.updateList = false }
+      this.setState(stateHandler)
     })
   }
 
   componentWillMount=()=>{ this.listMutation({isUpdate:false}) }
 
-  componentDidUpdate(){
-    if(this.state.updateList === true ){ 
+  componentDidUpdate(prevProps,prevState){
+    if(this.state.updateList === true && !this.state.errors){ 
       this.listMutation({isUpdate:true})
     }
   }
@@ -58,7 +67,9 @@ class UsersList extends Component {
           <td colSpan="8">{this.state.usersList.errorMessage}</td>
         </tr>
     }
-
+    if(this.state.loading){
+      return <tr><td colSpan="8"><div className={classes.loader}>Loading...</div></td></tr>
+    }
     return this.state.usersList.Users.map((user, key) => {
       const rule = key % 2 === 0 || key % 2 === 'NaN' ? 'even' : 'odd';
       const status =
@@ -100,7 +111,6 @@ class UsersList extends Component {
     return ''
   }
   render() {
-
     return (
         <div className={classes['card-container']}>
           <div className={classes['card-header']}>
@@ -124,10 +134,10 @@ class UsersList extends Component {
                 <select 
                   className={classes['header-filter-select']} 
                   onChange={e=>this.stateHandler('filter',e.target.value)} 
-                  defaultValue='Recently Registered'>
+                  defaultValue='Recently Login' >
+                  <option value='Recently Login'>Recently Login</option>
                   <option value='Onlines'>Onlines</option>
                   <option value='Verified'>Verified</option>
-                  <option value='Recently Login'>Recently Login</option>
                   <option value='Recently Registered'>Recently Registered</option>
                 </select>
               </label>

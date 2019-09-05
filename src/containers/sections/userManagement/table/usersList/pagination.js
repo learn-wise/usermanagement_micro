@@ -1,17 +1,6 @@
 import React from 'react';
 
-export default ({
-  currentPage,
-  lastPage,
-  hasNextPage,
-  hasPreviousPage,
-  classes,
-  pageHandler,
-  lastPageHandler,
-  nextPageHandler,
-  prevPageHandler
-}) => {
-
+export default ({ currentPage, lastPage, hasNextPage, hasPreviousPage, classes, pageHandler, lastPageHandler, nextPageHandler, prevPageHandler }) => {
 // initial variables
   let list=[]
   let pageNum;

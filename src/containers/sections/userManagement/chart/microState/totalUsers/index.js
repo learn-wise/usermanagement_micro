@@ -1,21 +1,62 @@
-import React,{Component} from 'react';
-import MicroState from '../index';
-import classes from './style.scss';
-import {ReactComponent as DownArrow} from '../../../../../../assets/icons/arrows_down_double.svg'
-import {ReactComponent as UpArrow} from '../../../../../../assets/icons/arrows_up_double.svg'
-import  { graphql } from 'react-apollo'
-import userCountQuery from '../../../../../../Graphql/queries/usersCount'
+import React,{Component}    from 'react';
+import { graphql }          from 'react-apollo'
+import moment               from 'moment';
+import MicroState           from '../index';
+import classes              from './style.scss';
+import {ReactComponent as DownArrow}    from '../../../../../../assets/icons/arrows_down_double.svg'
+import {ReactComponent as UpArrow}      from '../../../../../../assets/icons/arrows_up_double.svg'
+import userCountQuery                   from '../../../../../../Graphql/queries/usersCount'
 class TotalUsers extends Component{
     constructor(props){
         super(props)
         this.state={
-            statistic:{
-                TotalsCount:0,
-                diffCount:0
-            },
+            TotalsCount:0,
+            diffCount:null,
+            chartData:null,
             error:null,
             increase:false,
             decrease:false
+        }
+    }
+    componentDidMount(){
+        const usersSocket = this.props.socket;
+        usersSocket.on('totalUsersList',(list)=>{
+            if(!list){ list = {key:0} }
+            if(!this.state.diffCount){
+                this.setState({diffCount:Object.values(list)})
+            }else{
+                let prevCount       = this.state.diffCount;
+                let TotalsCount     = this.state.TotalsCount;
+                let currentCount    = Object.values(list);
+                if( prevCount<currentCount ){ this.setState({increase:true,decrease:false,diffCount:currentCount,TotalsCount:++TotalsCount}) }
+                if( prevCount>currentCount ){ this.setState({decrease:true,increase:false,diffCount:currentCount,TotalsCount:--TotalsCount}) }   
+            }
+            if(Object.values(list)[0] === 0){ return null }
+            let chartData = list,
+                resultData = [],
+                current_Month = moment().format('MM'),
+                current_Day   = moment().format('D'),
+                current_Year  = moment().format('YYYY'),
+                Days_Of_Month = moment().daysInMonth(),
+                i = 0,
+                j = +current_Day;
+    
+            while(i < current_Day){
+                let specificDay =  `${current_Year}/${current_Month}/${i+1}`;
+                chartData[specificDay] === undefined
+                ?resultData[i] = 0
+                :resultData[i] = chartData[specificDay];
+                i++
+            }
+    
+            while(j<Days_Of_Month){ resultData[j] = 0; j++ }
+            this.setState({chartData:[{data:resultData}]})
+        })
+    }
+    componentDidUpdate(prevProps,prevState){
+        if(this.props.data.usersCount && this.props.data.usersCount !== prevProps.data.usersCount ){
+            let currentCount    = this.props.data.usersCount.count;
+            this.setState({TotalsCount:currentCount})
         }
     }
     arrowDownHandler=()=>{
@@ -32,10 +73,6 @@ class TotalUsers extends Component{
         }
         return classArray.join(' ')
     }
-    series=()=>{
-        return[{ data: [70, 41, 35, 51, 20, 62, 69, 10, 30,10, 41, 35, 51, 20, 62, 69, 10, 30,20, 62, 69, 10, 30,10, 41, 35,27,28,29,30 ] }]
-    };
-    initialCount =()=>this.props.data.usersCount ? this.props.data.usersCount.count : 0;
     render(){
         
         return(
@@ -43,7 +80,7 @@ class TotalUsers extends Component{
                 <h5 className={classes.header}>Total users</h5>
                 <div className={classes.counter_section}>
                     <span className={classes.counter}>
-                    {this.initialCount()}
+                    {this.state.TotalsCount}
                     </span>
                     <span className={this.arrowUpHandler()}>
                         <UpArrow width="15px" height="15px"/>
@@ -55,7 +92,7 @@ class TotalUsers extends Component{
                 <MicroState 
                     type="users_count" 
                     color="#00B1F2" 
-                    series={this.series()}/>
+                    series={this.state.chartData}/>
             </div>
         )
     }
