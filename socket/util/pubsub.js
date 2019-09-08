@@ -1,6 +1,6 @@
 const Redis = require('redis')
 // const subscriber = Redis.createClient()
-const subscriber  = Redis.createClient().setMaxListeners(100);
+const subscriber  = Redis.createClient().setMaxListeners(0)
 
 const pubSubClass = class PubSub {
     // publish(channel, message) {
@@ -10,8 +10,10 @@ const pubSubClass = class PubSub {
     subscribe(channel) {
         subscriber.subscribe(channel)
     }
-    unsubscribe(){
+    unsubscribe(channel){
+        subscriber.unsubscribe(channel)
         subscriber.removeAllListeners()
+        
     }
     on(event, cb) {
         subscriber.on(event, (channel, message) => {

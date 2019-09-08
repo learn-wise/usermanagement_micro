@@ -67,7 +67,7 @@ class UserManagement extends Component {
         </div>
 
         <div className={cn(["users-Distribution","card"])}>
-          <WorldMap />
+          <WorldMap socket={visitorsSocket}/>
         </div>
         <div className={cn(["section-MapStatistic","card"])}>
           {this.mapDataDistro()}

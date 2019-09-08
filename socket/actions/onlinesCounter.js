@@ -1,9 +1,9 @@
 const 
   Redis = require('redis'),
   PubSub = require('../util/pubsub'),
-  redis = Redis.createClient().setMaxListeners(100),
+  redis = Redis.createClient().setMaxListeners(0),
   moment = require('moment'),
-  Onlines = {}
+  Onlines = {};
   
 let {
   ONLINES_INITIAL,
@@ -14,7 +14,8 @@ let {
   ONLINE_VISITORS_INITIAL,
   ONLINES_TOTAL_VISIT_LIST,
   TOTAL_USERS_LIST,
-  TOTAL_VERIFIED_USERS_LIST
+  TOTAL_VERIFIED_USERS_LIST,
+  VISITORS_MONTHLY_STATE,
 } = require('./actionTypes');
 
 Onlines.users =(socket)=> {
@@ -82,7 +83,6 @@ Onlines.visitors = (socket)=> {
     online_Visitors_Total_List = 'online:visitors:TList';
 
   PubSub.on("message", async (channel, message) => {
-    // console.log(message)
     if(message === online_Visitors){
       redis.get(online_Visitors,(err,reply)=>{
         socket.emit(ONLINE_VISITORS,{onlinesCount:reply})
@@ -90,22 +90,48 @@ Onlines.visitors = (socket)=> {
     }
     
     if(message === online_Visitors_List){
-      redis.hincrby( online_Visitors_Total_List , Day , 1 ,(err,result)=>{
-        redis.hgetall(online_Visitors_Total_List,(err,reply)=>{
-          socket.emit(ONLINES_TOTAL_VISIT_LIST,reply)
+      redis.multi()
+        .hincrby( online_Visitors_Total_List , Day , 1)
+        .hgetall(online_Visitors_Total_List)
+        .exec((err,reply)=>{ socket.emit(ONLINES_TOTAL_VISIT_LIST,reply[1]) })
+
+        redis.hgetall(`visitors:state:month:${moment().format('M')}`,(err,reply)=>{
+          socket.emit(VISITORS_MONTHLY_STATE,reply)
         })
-      })
     }
   })
-  redis.hgetall(online_Visitors_Total_List,(err,reply)=>{
-    socket.emit(ONLINES_TOTAL_VISIT_LIST,reply)
+
+  //  visitors distribution[ Map ]
+  redis.hgetall(`visitors:state:month:${moment().format('M')}`,(err,reply)=>{
+    let obj = { 
+      "K:IR": '1', 
+      "K:US": '1',
+      "K:NL": '5',
+      "K:RU":"50000",
+      "C:Tabriz:38.0962:46.2738": '1',
+      "C:Tehran:35.6892:51.3890":"5",
+      "C:Africa:8.7832:34.5085":"5"
+    }
+    socket.emit(VISITORS_MONTHLY_STATE,obj)
+  })
+  redis.scard(online_Visitors_List,(err,count)=>{
+    if(+count>0){
+      redis.multi()
+        .hset(online_Visitors_Total_List , Day , count)
+        .hgetall(online_Visitors_Total_List)
+        .exec((err,reply)=>{ socket.emit(ONLINES_TOTAL_VISIT_LIST,reply[1]) })
+    }
   })
   redis.get(online_Visitors,(err,reply)=>{
     socket.emit(ONLINE_VISITORS_INITIAL,{onlinesCount:reply})
   })
 }
 Onlines.disconnect=(socket)=>{
-  PubSub.unsubscribe()
+  PubSub.unsubscribe([
+    "__keyevent@0__:sadd",
+    "__keyevent@0__:incrby",
+    "__keyevent@0__:hincrby"
+  ])
 }
 Onlines.connect=(socket)=>{
   redis.on('ready',()=>{ redis.config('SET',"notify-keyspace-events","Eh$s") })
