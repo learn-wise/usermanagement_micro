@@ -53,25 +53,6 @@
             flex-direction: column;
             justify-content: space-evenly;
             box-shadow: $box-shadow-primary;
-
-            .MapData-info {}
-
-            .mb-5 {
-                font-weight: 600;
-                letter-spacing: .5px;
-            }
-
-            .small-grey-med {
-                font-weight: 400;
-                font-size: 1rem;
-                font-family: 'Signika';
-            }
-
-            .percent-span {
-                float: right;
-            }
-
-            .progress-bar {}
         }
     }
 

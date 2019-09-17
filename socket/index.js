@@ -11,6 +11,7 @@ usersSocket.on('connection', (socket) => {
 });
 
 visitorsSocket.on('connection', (socket) => {
+  // socket.on('ok',data=>{ console.log(data) })
   onlinesCounter.visitors(socket)
 });
 

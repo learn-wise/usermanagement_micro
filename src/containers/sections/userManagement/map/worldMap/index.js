@@ -1,157 +1,116 @@
-import React,{Component} from 'react';
-import { VectorMap } from "react-jvectormap";
-import classes from './style.scss'
-/* TODO MAP
-  * by each click on regions show (today visitors|users|total visitors)
-  * show online and visitors by markers on map
-  * initial show (3 most country that visitors come from of it by showing percent of them )
-  * adjust the color + hover effect
-*/
-
-
-class Map extends Component{
-
-  state={
-    visitors:{
-      mapData:{
-        monthly_country:{},
-        monthly_city:{},
-        monthly_city_count:{},
-        yearly_country:{},
-        yearly_city:{},
-        yearly_city_count:{}
-      }
-    },
-    users:{
-      mapData:{
-        monthly:{},
-        yearly :{}
-      }
-    },
-    mapType:'monthly'
+import React, { Component } from "react";
+import $ from "jquery";
+import classes from "./style.scss";
+import Color from "color";
+import { Draggable, TweenLite } from "gsap/all";
+import WorldMapSvg from './svg'
+class WorldMap extends Component {
+  constructor(props) {
+    super(props);
+    this.mapRef = React.createRef();
+    this.state = {
+      currentState: null,
+      zoomLevel: 0.9,
+      draggable: false,
+      container: null
+    };
   }
   componentDidMount() {
-    this.props.socket.on('visitorsMonthlyState',reply=>{
-      let countryObj = {}
-      let cityCountObj = {}
-      let cityArray = [];
-      for(let el in reply){
-        if(el.search(/(K:)\w+/) !== -1){
-          let country = el.split(':')[1]
-          countryObj[country] = +reply[el]
-        }else{
-          let arr = el.split(':')
-          let cityObj = {}
-          let city = arr[1]
-          cityObj.name = city;
-          cityObj.latLng = [+arr[2],+arr[3]]
-          cityArray.push(cityObj)
-          cityCountObj[city]= +reply[el] 
-        }
-      }
-      let mapData = { 
-        ...this.state.visitors.mapData,
-        monthly_country:countryObj,
-        monthly_city:cityArray,
-        monthly_city_count:cityCountObj
-      }
-      let visitors = { ...this.state.visitors, mapData }
-      this.setState({visitors})
-    })
-  }
-  
-  markers = ()=>{
-    if(this.state.mapType === 'monthly'){
-      return this.state.visitors.mapData.monthly_city
+    this.setState({ container: $("#container") });
+    let list = this.props.countryList;
+    let totalSum = Object.values(list).reduce((sum, num) => sum + num);
+    for (let el in list) {
+      let val = list[el];
+      let percent = +((val / totalSum) * 6).toFixed(3);
+      var color = Color("rgb(0, 255, 255)")
+        .lighten(percent)
+        .mix(Color("blue"), percent)
+        .cmyk()
+        .string();
+        TweenLite.to($(`#${el}`), 1, { fill: `${color}` });
     }
+    this.draggableFunc = Draggable.create(this.mapRef.current, {
+      type: "x,y",
+      bounds: this.state.container,
+      edgeResistance: 1,
+      onDragEnd: () => { console.log("Drag END!"); },
+      onPress: () => { console.log("draggable clicked!!!"); },
+      onDragStart: () => { console.log("Dragging!!!"); }
+    });
+    this.draggableFunc[0].disable();
   }
-  
-  handleClick = (e, countryCode) => { console.log(countryCode); };
-  onRegionTipShow = (e, el, code) => {
-    if(Object.keys(this.state.visitors.mapData.monthly_country).length > 0){
-      if(this.state.visitors.mapData.monthly_country[code]){
-        el.html(el.html() + "||" + this.state.visitors.mapData.monthly_country[code]);
+  componentDidUpdate(prevProps, prevState) {
+    if( prevState.zoomLevel !== this.state.zoomLevel ){
+      if (this.state.zoomLevel > 0.8 ) {
+        this.draggableFunc[0].enable();
+        TweenLite.to(this.state.container, 0.3, { transform: `scale(${this.state.zoomLevel})` });
+      }
+      if (this.state.zoomLevel < 0.9 ) {
+        this.draggableFunc[0].disable();
+        TweenLite.to($("#svg_WorldMap"), 1, { transform: "none" });
       }
     }
   }
-  onMarkerTipShow = (e, el, code) => { 
-    if(this.state.mapType === 'monthly'){
-      el.html(el.html() +"("+this.state.visitors.mapData.monthly_city_count[el.html()]+")"); 
+  clickHandler = i => {
+    $(i.target).toggleClass(classes.selected);
+  };
+  onHoverHandler = i => {
+    $(i.target).toggleClass("hovered");
+    let countryName = $(i.target).attr("title");
+    this.setState({ currentState: countryName });
+  };
+  offHoverHandler = i => {
+    $(i.target).toggleClass("hovered");
+    this.setState({ currentState: null });
+  };
+  zoomInHandler = () => {
+    let zoomLevel = +this.state.zoomLevel + 0.3;
+    this.setState({ zoomLevel });
+  };
+  zoomOutHandler = () => {
+    let zoomLevel = +this.state.zoomLevel - 0.3;
+    this.setState({ zoomLevel });
+  };
+  onWheel = e => {
+    e.preventDefault();
+    let scale = +this.state.zoomLevel;
+    let zoomLevel = +((e.deltaY / 3) * 0.1).toFixed(1);
+    scale = this.state.zoomLevel + zoomLevel;
+    if (scale < 3.1 && scale > 0.8) {
+      this.setState({ zoomLevel: scale });
     }
-  }
-  onRegionSelected = () => { console.log('onRegionSelected') }
-  onMarkerSelected = () => { console.log('onMarkerSelected') }
-  markerStyle=()=>({ initial: { fill: '#F8E23B', stroke: '#383f47' }, hover: { cursor:"pointer" }, selected: { fill: '#CA0020' } })
-  regionStyle=()=>({ initial: { fill: "#e4e4e4", "fill-opacity": 0.9, stroke: "none", "stroke-width": 0, "stroke-opacity": 0 }, hover: { "fill-opacity": 0.8, cursor: "pointer" }, selected: { fill: "#2938bc"}, selectedHover: {} })
-  series=()=>{
-    let seriesData = this.state.visitors.mapData.monthly_country
-    if(this.state.mapType === 'yearly'){
-      seriesData = this.state.visitors.mapData.yearly_country
-    }
-    return {
-      regions: [{
-        values: seriesData, 
-        scale: ["#ccc", "#00000"], 
-        normalizeFunction: "polynomial"
-      }]
-    }
-  }
+  };
 
-  WorldMap = ()=>{
-    if( Object.keys(this.state.visitors.mapData.monthly_country).length > 0 ){
-      return <VectorMap
-        map={"world_mill"}
-        backgroundColor="transparent"
-        regionsSelectable={true}
-        markersSelectable={true}
-        zoomOnScroll={true}
-        containerStyle={{ width: "100%", height: "50rem" }}
-        onRegionTipShow={this.onRegionTipShow}
-        onMarkerTipShow={this.onMarkerTipShow}
-        markers={this.markers()}
-        onRegionSelected={this.onRegionSelected}
-        onMarkerSelected={this.onMarkerSelected}
-        onRegionClick={this.handleClick}
-        containerClassName={classes.map}
-        zoomAnimate={true}
-        markerStyle={this.markerStyle()}
-        regionStyle={this.regionStyle()}
-        series={this.series()}
-      />
-    }else{
-      return <div className={classes.wrapper}>
-        <div className={classes.circle}></div>
-        <div className={classes.circle}></div>
-        <div className={classes.circle}></div>
-        <div className={classes.shadow}></div>
-        <div className={classes.shadow}></div>
-        <div className={classes.shadow}></div>
-        <span>Loading</span>
+  render() {
+    return (
+      <div>
+        <div className="state">&nbsp;{this.state.currentState}</div>
+        <div className="App">
+          <div className="controller">
+            <button
+              className="zoomIn"
+              onClick={this.zoomInHandler}
+              disabled={this.state.zoomLevel < 3 ? false : true} >+</button>
+            <button
+              className="zoomOut"
+              onClick={this.zoomOutHandler}
+              disabled={this.state.zoomLevel > 0.9 ? false : true} >-</button>
+          </div>
+          <div id="container">
+            <svg
+              height="100%"
+              width="100%"
+              id="svg_WorldMap"
+              strokeLinejoin="round"
+              onWheel={this.onWheel}
+              ref={this.mapRef} >
+                {WorldMapSvg(this.onHoverHandler,this.clickHandler,this.offHoverHander)}
+            </svg>
+          </div>
+        </div>
       </div>
-    }
-  }
-  btnHandler = ()=>{
-    if( Object.keys(this.state.visitors.mapData.monthly_country).length > 0 ){
-      return <div className={classes.btn}>
-              <button 
-                className={classes['btn--year']} 
-                onClick={()=>this.setState({mapType:"yearly"})} 
-                disabled={this.state.mapType === "yearly"?true:false}>year</button>
-              <button 
-                className={classes['btn--month']} 
-                onClick={()=>this.setState({mapType:"monthly"})} 
-                disabled={this.state.mapType === "monthly"?true:false}>month</button>
-            </div>
-    }
-  }
-
-  render(){
-    return  <div className={classes.boxContainer}> 
-      {this.WorldMap()}
-      {this.btnHandler()}
-    </div> ;
+    );
   }
 }
 
-
-export default Map;
+export default WorldMap;

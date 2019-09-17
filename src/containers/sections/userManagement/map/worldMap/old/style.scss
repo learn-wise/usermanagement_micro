@@ -1,0 +1,60 @@
+@import "../../../../../components/scss/main.scss";
+@include loadingCircle;
+
+.map svg g {
+    cursor: pointer;
+}
+
+.boxContainer {
+    height: 50rem;
+}
+
+.btn {
+    position: absolute;
+    bottom: .2rem;
+    left: .2rem;
+
+    &--year,
+    &--month {
+        padding: .5rem 1.4rem;
+        background-image: radial-gradient(circle farthest-corner at 10% 20%,
+                #1ab2cb 0%,
+                #0066a1 90.1%);
+        border: none;
+        font-weight: 700;
+        text-transform: capitalize;
+        font-size: 1rem;
+        color: #ffffff;
+        transition: all .2s;
+        outline: none;
+
+        &:hover {
+            background-image: radial-gradient(circle farthest-corner at 10% 20%,
+                    #0066a1 0%,
+                    #1ab2cb 90.1%);
+            box-shadow: .01rem .01rem .3rem #262626;
+        }
+
+        &:disabled {
+            border: 1px solid #999999;
+            background: #cccccc;
+            color: #666666;
+            box-shadow: none;
+        }
+    }
+
+    &--year {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 10px;
+    }
+
+    &--month {
+        border-top-left-radius: 0;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 0;
+    }
+}
+

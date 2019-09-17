@@ -1,7 +1,14 @@
 const 
   Redis = require('redis'),
   PubSub = require('../util/pubsub'),
-  redis = Redis.createClient().setMaxListeners(0),
+  redis = Redis.createClient({
+    retry_strategy: function (options) {
+        if (options.error && options.error.code === 'ECONNREFUSED') { return new Error('The server refused the connection'); }
+        if (options.total_retry_time > 1000 * 60 * 60) { return new Error('Retry time exhausted'); }
+        if (options.attempt > 10) { return undefined; }
+        return Math.min(options.attempt * 100, 3000);
+    }
+  }).setMaxListeners(0),
   moment = require('moment'),
   Onlines = {};
   
@@ -34,6 +41,7 @@ Onlines.users =(socket)=> {
       })
     }
     if(message === online_Users_List){
+      console.log('>>>>>')
         redis.hgetall(online_Users_Total_List,(err,reply)=>{ socket.emit(ONLINES_TOTAL_LIST,reply) })
     }
     if(message === Total_Users_Count){
@@ -104,13 +112,14 @@ Onlines.visitors = (socket)=> {
   //  visitors distribution[ Map ]
   redis.hgetall(`visitors:state:month:${moment().format('M')}`,(err,reply)=>{
     let obj = { 
-      "K:IR": '1', 
-      "K:US": '1',
-      "K:NL": '5',
-      "K:RU":"50000",
-      "C:Tabriz:38.0962:46.2738": '1',
-      "C:Tehran:35.6892:51.3890":"5",
-      "C:Africa:8.7832:34.5085":"5"
+      "count:IR": '1', 
+      "count:US": '1',
+      "count:NL": '5',
+      "count:RU":"50000",
+      "IR:Tabriz": '1',
+      "IR:Tehran":"5",
+      "IR:Mashad":"10",
+      "RU:Africa":"5"
     }
     socket.emit(VISITORS_MONTHLY_STATE,obj)
   })
@@ -119,7 +128,9 @@ Onlines.visitors = (socket)=> {
       redis.multi()
         .hset(online_Visitors_Total_List , Day , count)
         .hgetall(online_Visitors_Total_List)
-        .exec((err,reply)=>{ socket.emit(ONLINES_TOTAL_VISIT_LIST,reply[1]) })
+        .exec((err,reply)=>{ 
+          if(Array.isArray(reply)){ socket.emit(ONLINES_TOTAL_VISIT_LIST,reply[1]) }
+          })
     }
   })
   redis.get(online_Visitors,(err,reply)=>{

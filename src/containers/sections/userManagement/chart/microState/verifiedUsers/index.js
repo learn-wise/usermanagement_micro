@@ -30,7 +30,7 @@ class VerifiedUsers extends Component{
                 let verifiedCount   = this.state.verifiedCount;
                 let currentCount    = Object.values(list);
                 if( prevCount<currentCount ){ this.setState({increase:true,decrease:false,diffCount:currentCount,verifiedCount:++verifiedCount}) }
-                if( prevCount>currentCount ){ this.setState({decrease:true,increase:false,diffCount:currentCount,verifiedCount:--verifiedCount}) }   
+                if( prevCount>currentCount ){ this.setState({decrease:true,increase:false,diffCount:currentCount,verifiedCount:--verifiedCount}) } 
             }
             if(Object.values(list)[0] === 0){ return null }
             let chartData = list;
@@ -50,7 +50,7 @@ class VerifiedUsers extends Component{
                 i++
             }
             while(j<Days_Of_Month){ resultData[j] = 0; j++ }
-            this.setState({chartData:[{data:resultData}]})
+            this.setState({ chartData:[{data:resultData}] })
         }) 
     }
     arrowDownHandler=()=>{
@@ -67,7 +67,13 @@ class VerifiedUsers extends Component{
         }
         return classArray.join(' ')
     }
-    initialCount =()=> this.props.data.verifiedUsersCount?this.props.data.verifiedUsersCount.count : 0 ; 
+    initialCount =()=>{
+        if(this.props.data.verifiedUsersCount){
+            return this.props.data.verifiedUsersCount.count === 0
+            ? this.state.verifiedCount 
+            : this.props.data.verifiedUsersCount.count;
+        } 
+    }
     render(){
         return(
             <div className={classes.container}>
