@@ -87,7 +87,7 @@
         &-Distribution {
             @include card;
             grid-column: 1 / span 4;
-            grid-row: 2 / 3;
+            // grid-row: 2 / 3;
             outline: rgba(#262626, .2) solid .1rem;
             box-shadow: $box-shadow-primary;
 

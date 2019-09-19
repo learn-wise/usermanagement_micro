@@ -33,14 +33,6 @@ class UsersList extends Component {
     this.props.mutate({
       variables: {show,filter,search,page:currentPage} 
     })
-    .catch(e=>{
-      const stateHandler = {
-        ...this.state.usersList,
-        updateList:false,
-        errors:e.message
-      }
-      this.setState(stateHandler)
-    })
     .then(({data})=>{
       let usersList = {
         ...data.usersList,
@@ -48,6 +40,14 @@ class UsersList extends Component {
       }
       let stateHandler = { usersList, errors:null,loading:false }
       if(isUpdate){ stateHandler.updateList = false }
+      this.setState(stateHandler)
+    })
+    .catch(e=>{
+      const stateHandler = {
+        ...this.state.usersList,
+        updateList:false,
+        errors:e.message
+      }
       this.setState(stateHandler)
     })
   }
@@ -62,9 +62,9 @@ class UsersList extends Component {
 
   rowsHandler = () => {
 
-    if(this.state.usersList.errorMessage){
+    if(this.state.usersList.errorMessage || this.state.errors){
         return <tr align="center">
-          <td colSpan="8">{this.state.usersList.errorMessage}</td>
+          <td colSpan="8">{this.state.usersList.errorMessage  || this.state.errors }</td>
         </tr>
     }
     if(this.state.loading){

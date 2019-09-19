@@ -17,6 +17,22 @@ class UserManagement extends Component {
   usersSocket    = this.props.socket('users')
   visitorsSocket = this.props.socket('visitors')
   render() {
+    this.visitorsSocket.connect()
+    this.usersSocket.connect()
+    this.usersSocket.on('connect', () => {
+      console.log('usersSocket connected')
+    });
+    this.visitorsSocket.on('connect', () => {
+      console.log('visitorsSocket connected')
+    });
+    this.usersSocket.on('connect_error', (error) => {
+      console.log('[_usersSocket_]',error)
+      this.usersSocket.close()
+    });
+    this.visitorsSocket.on('connect_error', (error) => {
+      console.log('[_visitorsSocket_]',error)
+      this.visitorsSocket.close()
+    });
     function cn(elem) { return cl(elem, classes); }
 
     return (
