@@ -145,7 +145,7 @@ class Map extends Component{
   render(){
     return  <div className={classes.boxContainer}> 
       {this.WorldMap()}
-      {this.btnHandler()}
+     
     </div> ;
   }
 }

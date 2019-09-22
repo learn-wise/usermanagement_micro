@@ -17,14 +17,6 @@ class UserManagement extends Component {
   usersSocket    = this.props.socket('users')
   visitorsSocket = this.props.socket('visitors')
   render() {
-    this.visitorsSocket.connect()
-    this.usersSocket.connect()
-    this.usersSocket.on('connect', () => {
-      console.log('usersSocket connected')
-    });
-    this.visitorsSocket.on('connect', () => {
-      console.log('visitorsSocket connected')
-    });
     this.usersSocket.on('connect_error', (error) => {
       console.log('[_usersSocket_]',error)
       this.usersSocket.close()
@@ -47,10 +39,12 @@ class UserManagement extends Component {
         <div className={cn(["users-Distribution","card"])}>
           <WorldMap 
             socket={this.visitorsSocket} 
-            mapChoosed={(el)=>this.setState({mapClicked:el})}/>
+            selectedCountry={(el)=>this.setState({mapClicked:el})}/>
         </div>
         <div className={cn(["section-MapStatistic","card"])}>
-          <MapDistribution mapClicked={this.state.mapClicked}/>
+          <MapDistribution 
+            mapClicked={this.state.mapClicked}
+            />
         </div>
         <div className={cn(["section-Notification"])}> <ChatNotification/> </div>
         <div className={cn(["section-MonthlyState","card"])}> <MonthlyState/> </div>

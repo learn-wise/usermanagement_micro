@@ -3,7 +3,7 @@ import classes from "./style.scss";
 import $ from "jquery"
 import Color from "color";
 import { Draggable, TweenLite } from "gsap/all";
-import WorldMapSvg from './svg';
+import WorldMapSvg from './worldMap_svg';
 import ReactTooltip from 'react-tooltip';
 class WorldMap extends Component {
   constructor(props) {
@@ -14,40 +14,51 @@ class WorldMap extends Component {
       minZoom:1,
       maxZoom:3,
       draggable: false,
-      container: null
+      container: null,
+      visitors:{
+        mapData:{
+          monthly_country:{},
+          yearly_country:{},
+        }
+      },
+      users:{
+        mapData:{
+          monthly:{},
+          yearly :{}
+        }
+      },
+      mapType:'monthly'
     };
   }
   componentDidMount() {
-    this.setState({ container:$("#container") });
-    let list = {
-      IR: 200,
-      AL: 200,
-      GL: 100,
-      CA: 8000,
-      RU: 500
-    };
-    let totalSum = Object.values(list).reduce((sum, num) => sum + num);
-    for (let el in list) {
-      let val = list[el];
-      let percent = +((val / totalSum) * 6).toFixed(3);
-      var color = Color("rgb(0, 255, 255)")
-        .lighten(percent)
-        .mix(Color("blue"), percent)
-        .cmyk()
-        .string();
-        TweenLite.to($(`#${el}`), 1, { fill: `${color}` });
-    }
-    this.draggableFunc = Draggable.create(this.mapRef.current, {
-      type: "x,y",
-      bounds:{width:600, height:600},
-      edgeResistance: .5,
-      onDragEnd: () => { console.log("Drag END!"); },
-      onPress: () => { console.log("draggable clicked!!!"); },
-      onDragStart: () => { console.log("Dragging!!!"); }
-    });
-    this.draggableFunc[0].disable();
+    this.socketHandler()
+    this.DragHandler()
   }
   componentDidUpdate(prevProps, prevState) {
+    this.updateZoom(prevProps, prevState)
+    this.colorizeCountry()
+  }
+  colorizeCountry=()=>{
+    let seriesData = this.state.visitors.mapData.monthly_country
+    if(this.state.mapType === 'yearly'){
+      seriesData = this.state.visitors.mapData.yearly_country
+    }
+    console.log(seriesData)
+    if(Object.keys(seriesData).length > 0){
+      let totalSum = Object.values(seriesData).reduce((sum, num) => sum + num);
+      for (let el in seriesData) {
+        let val = seriesData[el];
+        let percent = +((val / totalSum) * 6).toFixed(3);
+        var color = Color("rgb(0, 255, 255)")
+          .lighten(percent)
+          .mix(Color("blue"), percent)
+          .cmyk()
+          .string();
+          TweenLite.to($(`#${el}`), 1, { fill: `${color}` });
+      }
+    }
+  };
+  updateZoom=(prevPros,prevState)=>{
     if( prevState.zoomLevel !== this.state.zoomLevel ){
       if (this.state.zoomLevel >= this.state.minZoom && this.state.zoomLevel <= this.state.maxZoom ) {
         this.draggableFunc[0].enable();
@@ -59,9 +70,47 @@ class WorldMap extends Component {
         TweenLite.to($("#container"), 1, { transform:"none",scaleX:1,scaleY:1 });
       }
     }
-  }
+  };
+  DragHandler=()=>{
+    this.setState({ container:$("#container") });
+    this.draggableFunc = Draggable.create(this.mapRef.current, {
+      type: "x,y",
+      bounds:{width:600, height:600},
+      edgeResistance: .5,
+      onDragEnd: () => { console.log("Drag END!"); },
+      onPress: () => { console.log("draggable clicked!!!"); },
+      onDragStart: () => { console.log("Dragging!!!"); }
+    });
+    this.draggableFunc[0].disable();
+  };
+  socketHandler = ()=>{
+    this.props.socket.on('visitorsMonthlyState',reply=>{ 
+      let monthly_country  = {}
+      let monthly_city   = {}
+
+      // for(let el in reply){
+      //   if(!el.search(/(count:)\w+/)){
+      //     let country = el.split(':')[1]
+      //     monthly_country[country]=+reply[el]
+      //   }else{
+      //     let arr = el.split(":") 
+      //     let cityContainer = monthly_city[arr[0]] || {}
+      //     cityContainer[arr[1]] = +reply[el]
+      //     monthly_city[arr[0]] = cityContainer   
+      //   }
+      // }
+      let mapData = { 
+        ...this.state.visitors.mapData,
+        monthly_country
+      }
+      let visitors = { ...this.state.visitors, mapData }
+      this.setState({visitors})
+      console.log(this.state)
+    })
+  };
   clickHandler = i => {
     $(i.target).toggleClass(classes.selected);
+    this.props.selectedCountry(i.target)
   };
   onHoverHandler = i => {
     $(i.target).toggleClass(classes.hovered);
@@ -84,6 +133,20 @@ class WorldMap extends Component {
     scale = this.state.zoomLevel + zoomLevel;
     if (scale <= (this.state.maxZoom + .5) && scale >= (this.state.minZoom - .1)) {
       this.setState({ zoomLevel: scale });
+    }
+  };
+  btnHandler = ()=>{
+    if( Object.keys(this.state.visitors.mapData.monthly_country).length > 0 ){
+      return <div className={classes.btn}>
+        <button 
+          className={classes['btn--year']} 
+          onClick={()=>this.setState({mapType:"yearly"})} 
+          disabled={this.state.mapType === "yearly"?true:false}>year</button>
+        <button 
+          className={classes['btn--month']} 
+          onClick={()=>this.setState({mapType:"monthly"})} 
+          disabled={this.state.mapType === "monthly"?true:false}>month</button>
+      </div>
     }
   };
   render() {
@@ -114,6 +177,7 @@ class WorldMap extends Component {
               </svg>
           </figure>
         </div>
+        {this.btnHandler()}
       </div>
     );
   }

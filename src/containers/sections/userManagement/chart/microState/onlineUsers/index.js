@@ -44,7 +44,6 @@ class OnlineUsers extends Component{
         })
 
         usersSocket.on('onlineUsersTList',list=>{
-            console.log(list)
             if(!list){ return null }
             let chartData = list;
             let resultData = [];

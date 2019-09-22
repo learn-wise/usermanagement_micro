@@ -115,7 +115,7 @@ Onlines.visitors = (socket)=> {
       "count:IR": '1', 
       "count:US": '1',
       "count:NL": '5',
-      "count:RU":"50000",
+      "count:RU":"500",
       "IR:Tabriz": '1',
       "IR:Tehran":"5",
       "IR:Mashad":"10",

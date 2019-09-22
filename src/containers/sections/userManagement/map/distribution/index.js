@@ -3,6 +3,30 @@ import { ProgressBar } from "react-bootstrap";
 import cl from "../../../../../Hoc/multiclass";
 import classes from './style.scss';
 class MapDistribution extends Component{
+
+
+    // socketHandler = ()=>{
+    //     this.props.socket.on('visitorsMonthlyState',reply=>{ 
+    //       let monthly_country  = {}
+    //       let monthly_city   = {}
+    
+    //       for(let el in reply){
+    //         if(!el.search(/(count:)\w+/)){
+    //           let country = el.split(':')[1]
+    //           monthly_country[country]=+reply[el]
+    //         }else{
+    //           let arr = el.split(":") 
+    //           let cityContainer = monthly_city[arr[0]] || {}
+    //           cityContainer[arr[1]] = +reply[el]
+    //           monthly_city[arr[0]] = cityContainer   
+    //         }
+    //       }
+    //       let mapData = { ...this.state.visitors.mapData, monthly_country, monthly_city }
+    //       let visitors = { ...this.state.visitors, mapData }
+    //       this.setState({visitors})
+    //       console.log(this.state)
+    //     })
+    // };
     mainData=()=>{
         const mapData = [ 
             { count: "100K", region: "USA", percent: "50" }, 
@@ -24,7 +48,7 @@ class MapDistribution extends Component{
     }
     render(){
         if(this.props.mapClicked){
-            console.log(window.localStorage.getItem('worldMap-selected-regions'))
+            console.log(this.props.mapClicked)
         }
         return <div>{this.mainData()}</div>
     }
