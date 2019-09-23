@@ -13,13 +13,7 @@ module.exports = {
     ONLINES_TOTAL_VISIT_LIST: "onlineVisitorsTList",
 
     //Map
-    VISITORS_MONTHLY_STATE: "visitorsMonthlyState",
-
-
-
-
-
-
-
+    VISITORS_MONTHLY_STATE_COUNTRY: "visitorsMonthlyStateCountry",
+    VISITORS_MONTHLY_STATE_CITY: "visitorsMonthlyStateCity"
 
 }

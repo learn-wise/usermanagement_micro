@@ -17,8 +17,8 @@ class WorldMap extends Component {
       container: null,
       visitors:{
         mapData:{
-          monthly_country:{},
-          yearly_country:{},
+          monthly:{},
+          yearly:{},
         }
       },
       users:{
@@ -39,13 +39,13 @@ class WorldMap extends Component {
     this.colorizeCountry()
   }
   colorizeCountry=()=>{
-    let seriesData = this.state.visitors.mapData.monthly_country
+    let seriesData = this.state.visitors.mapData.monthly
     if(this.state.mapType === 'yearly'){
-      seriesData = this.state.visitors.mapData.yearly_country
+      seriesData = this.state.visitors.mapData.yearly
+      console.log(seriesData)
     }
-    console.log(seriesData)
     if(Object.keys(seriesData).length > 0){
-      let totalSum = Object.values(seriesData).reduce((sum, num) => sum + num);
+      let totalSum = Object.values(seriesData).reduce((sum, num) =>Number(sum) + Number(num));
       for (let el in seriesData) {
         let val = seriesData[el];
         let percent = +((val / totalSum) * 6).toFixed(3);
@@ -54,8 +54,10 @@ class WorldMap extends Component {
           .mix(Color("blue"), percent)
           .cmyk()
           .string();
-          TweenLite.to($(`#${el}`), 1, { fill: `${color}` });
+          TweenLite.to($(`#${el}`),1, { fill: `${color}` });
       }
+    }else{
+      TweenLite.to($(`.${classes.svg_WorldMap} path`), 1, { fill:"#ccc" });
     }
   };
   updateZoom=(prevPros,prevState)=>{
@@ -84,28 +86,15 @@ class WorldMap extends Component {
     this.draggableFunc[0].disable();
   };
   socketHandler = ()=>{
-    this.props.socket.on('visitorsMonthlyState',reply=>{ 
-      let monthly_country  = {}
-      let monthly_city   = {}
-
-      // for(let el in reply){
-      //   if(!el.search(/(count:)\w+/)){
-      //     let country = el.split(':')[1]
-      //     monthly_country[country]=+reply[el]
-      //   }else{
-      //     let arr = el.split(":") 
-      //     let cityContainer = monthly_city[arr[0]] || {}
-      //     cityContainer[arr[1]] = +reply[el]
-      //     monthly_city[arr[0]] = cityContainer   
-      //   }
-      // }
-      let mapData = { 
-        ...this.state.visitors.mapData,
-        monthly_country
-      }
+    this.props.socket.on('visitorsMonthlyStateCountry',monthly=>{ 
+      let mapData = { ...this.state.visitors.mapData, monthly }
       let visitors = { ...this.state.visitors, mapData }
       this.setState({visitors})
-      console.log(this.state)
+    })
+    this.props.socket.on('visitorsYearlyStateCountry',yearly=>{ 
+      let mapData = { ...this.state.visitors.mapData, yearly }
+      let visitors = { ...this.state.visitors, mapData }
+      this.setState({visitors})
     })
   };
   clickHandler = i => {
@@ -136,7 +125,7 @@ class WorldMap extends Component {
     }
   };
   btnHandler = ()=>{
-    if( Object.keys(this.state.visitors.mapData.monthly_country).length > 0 ){
+    if( Object.keys(this.state.visitors.mapData.monthly).length > 0 ){
       return <div className={classes.btn}>
         <button 
           className={classes['btn--year']} 
@@ -172,8 +161,7 @@ class WorldMap extends Component {
                 ref={this.mapRef}
                 viewBox="0 0 1020 700" 
                 preserveAspectRatio="xMidYMid meet"
-                >
-                  {WorldMapSvg(this.onHoverHandler,this.clickHandler,this.offHoverHandler)}
+                >{WorldMapSvg(this.onHoverHandler,this.clickHandler,this.offHoverHandler)}
               </svg>
           </figure>
         </div>

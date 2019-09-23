@@ -49,10 +49,9 @@
             grid-column: 5 / span 2;
             height: 100%;
             padding: 0 2rem;
-            display: flex;
-            flex-direction: column;
             justify-content: space-evenly;
             box-shadow: $box-shadow-primary;
+            position: relative;
         }
     }
 

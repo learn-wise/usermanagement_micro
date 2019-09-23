@@ -1,4 +1,32 @@
-.MapData-info {}
+.MapData {
+    &-header {
+        padding: 1rem 2rem;
+        text-align: center;
+        position: absolute;
+        top: 0%;
+        left: 50%;
+        transform: translateX(-50%);
+        background:bisque;
+        width: 100%;
+        font-size: 1.2rem;
+        font-weight: 400;
+        font-family: 'Literata';
+        text-transform: uppercase;
+    }
+
+    &-info {
+        position: relative;
+        &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            border: 3px dashed rgba(#262626,.2);
+            display: block;
+            top: 180%;
+            transform: translateY(-50%);
+        }
+    }
+}
 
 .mb-5 {
     font-weight: 600;
@@ -15,4 +43,6 @@
     float: right;
 }
 
-.progress-bar {}
+.progress-bar {
+  
+}

@@ -12,6 +12,7 @@ const
   moment = require('moment'),
   Onlines = {};
   
+let Year = moment().format('Y')
 let {
   ONLINES_INITIAL,
   USERS_ONLINE,
@@ -22,7 +23,8 @@ let {
   ONLINES_TOTAL_VISIT_LIST,
   TOTAL_USERS_LIST,
   TOTAL_VERIFIED_USERS_LIST,
-  VISITORS_MONTHLY_STATE,
+  VISITORS_MONTHLY_STATE_COUNTRY,
+  VISITORS_MONTHLY_STATE_CITY
 } = require('./actionTypes');
 
 Onlines.users =(socket)=> {
@@ -84,8 +86,8 @@ Onlines.users =(socket)=> {
   })
 }
 Onlines.visitors = (socket)=> {
-
   const Day                    = moment().format('YYYY/MM/D'),
+    Month                      = moment().format('M'),
     online_Visitors            = 'online:count',
     online_Visitors_List       = `online:visitors:Clist:${Day}`,
     online_Visitors_Total_List = 'online:visitors:TList';
@@ -103,25 +105,25 @@ Onlines.visitors = (socket)=> {
         .hgetall(online_Visitors_Total_List)
         .exec((err,reply)=>{ socket.emit(ONLINES_TOTAL_VISIT_LIST,reply[1]) })
 
-        redis.hgetall(`visitors:state:month:${moment().format('M')}`,(err,reply)=>{
-          socket.emit(VISITORS_MONTHLY_STATE,reply)
+        redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,(err,reply)=>{
+          socket.emit(VISITORS_MONTHLY_STATE_COUNTRY,reply)
+        })
+        redis.hgetall(`visitors:state:city:month:${Month}`,(err,reply)=>{
+          socket.emit(VISITORS_MONTHLY_STATE_CITY,reply)
         })
     }
   })
 
   //  visitors distribution[ Map ]
-  redis.hgetall(`visitors:state:month:${moment().format('M')}`,(err,reply)=>{
-    let obj = { 
-      "count:IR": '1', 
-      "count:US": '1',
-      "count:NL": '5',
-      "count:RU":"500",
-      "IR:Tabriz": '1',
-      "IR:Tehran":"5",
-      "IR:Mashad":"10",
-      "RU:Africa":"5"
-    }
-    socket.emit(VISITORS_MONTHLY_STATE,obj)
+  redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,(err,reply)=>{
+    console.log(reply)
+    let obj = { IR: '1000', US: '600',GL:'100',RU:'50'}
+    socket.emit(VISITORS_MONTHLY_STATE_COUNTRY,obj)
+  })
+  redis.hgetall(`visitors:state:city:month:${Year}:${Month}`,(err,reply)=>{
+    // console.log(reply)
+    let obj = {}
+    socket.emit(VISITORS_MONTHLY_STATE_CITY,obj)
   })
   redis.scard(online_Visitors_List,(err,count)=>{
     if(+count>0){
@@ -135,6 +137,14 @@ Onlines.visitors = (socket)=> {
   })
   redis.get(online_Visitors,(err,reply)=>{
     socket.emit(ONLINE_VISITORS_INITIAL,{onlinesCount:reply})
+  })
+  socket.on("visitorsCountryDetail",countryId=>{
+    redis.hget( `visitors:state:city:month:${Year}:${Month}`, countryId, (err,reply)=>{
+        let obj =  { tehran : 100 , tabriz : 10 , shiraz: 5, Mashad:500 , Rasht:50 }
+        obj = JSON.stringify(obj)
+      socket.emit('visitorsCountryDetail_receive',obj)
+      // socket.emit('visitorsCountryDetail_receive',reply)
+      })
   })
 }
 Onlines.disconnect=(socket)=>{

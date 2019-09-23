@@ -43,6 +43,7 @@ class UserManagement extends Component {
         </div>
         <div className={cn(["section-MapStatistic","card"])}>
           <MapDistribution 
+            visiSocket={this.visitorsSocket} 
             mapClicked={this.state.mapClicked}
             />
         </div>
