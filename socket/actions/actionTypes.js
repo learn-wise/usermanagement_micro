@@ -14,6 +14,9 @@ module.exports = {
 
     //Map
     VISITORS_MONTHLY_STATE_COUNTRY: "visitorsMonthlyStateCountry",
-    VISITORS_MONTHLY_STATE_CITY: "visitorsMonthlyStateCity"
+    VISITORS_MONTHLY_STATE_CITY: "visitorsMonthlyStateCity",
+
+    VISITORS_YEARLY_STATE_COUNTRY: "visitorsYearlyStateCountry",
+    VISITORS_YEARLY_STATE_CITY: "visitorsYearlyStateCity",
 
 }

@@ -3,65 +3,73 @@ import { ProgressBar } from "react-bootstrap";
 import cl from "../../../../../Hoc/multiclass";
 import Aux from "../../../../../Hoc/wrapper";
 import classes from './style.scss';
+import shortNum from 'short-number';
 class MapDistribution extends Component{
     constructor(props) {
         super(props);
         this.visitorSocket = this.props.visiSocket
         this.state = {
-            mapInitialData:[ 
-                { count: "100K", region: "USA", percent: "50" }, 
-                { count: "1M", region: "Europe", percent: "80" }, 
-                { count: "450K", region: "Australia", percent: "40" }, 
-                { count: "1B", region: "India", percent: "90" } 
-            ], mapSpecificData:null , hasVisitor:false
+            mapInitialData:[],
+            mapSpecificData:null,
+            hasVisitor:false,
+            worldAlarm:false
         }
         this.cn = (elem)=>cl(elem, classes)
     }
+    
+    componentWillMount() {
+        this.mapInitialData() 
+    }
+    
     componentDidUpdate(prevProps,prevState){
-        if(this.props.mapClicked !== prevProps.mapClicked){
-            this.visitorSocket.emit('visitorsCountryDetail',this.props.mapClicked.id)
+        if( 
+            this.props.mapClicked !== prevProps.mapClicked 
+        ||  this.props.mapType    !== prevProps.mapType 
+        ){       
+            if(this.props.mapClicked.id !== 'world'){
+                this.visitorSocket.emit('visitorsCountryDetail',{
+                    countryId:this.props.mapClicked.id,
+                    mapType:this.props.mapType
+                })
+                this.setState({worldAlarm:true})
+            }else{ this.mapInitialData() }
         }
     }
     componentDidMount(){
         this.visitorSocket.on('visitorsCountryDetail_receive',reply=>{
-            if(reply){
+            if(reply && reply !== "{}"){
                 reply= JSON.parse(reply)
-                let totalSum = Object.values(reply).reduce((sum, num) =>Number(sum) + Number(num));
-                let arrContainer= []
-                for(let el in reply){
-                    let obj = {}
-                    obj.count   = reply[el]
-                    obj.region  = el
-                    obj.percent = +( ( reply[el] / totalSum ) * 100 ).toFixed(0)
-                    arrContainer.push(obj)
-                }
-                console.log(arrContainer)
-                this.setState({
-                    mapSpecificData:arrContainer,
-                    hasVisitor:true
-                })
-            }else{
-                this.setState({ hasVisitor:false })
-            }
+                this.setState({ mapSpecificData:reply, hasVisitor:true })
+            }else{ this.setState({ hasVisitor:false }) }
+        })
+    }
+    mapInitialData =()=>{
+        this.visitorSocket.emit('visitorsTopCountry',{mapType:this.props.mapType})
+        this.visitorSocket.on('visitorsTopCountry_callback',countries=>{
+            this.setState({mapInitialData:countries})
         })
     }
     mainData=()=>{
-        let {mapInitialData,mapSpecificData} = this.state
-        let mapData = mapSpecificData ? mapSpecificData : mapInitialData ;
+        let {mapSpecificData} = this.state
+        let mapData = mapSpecificData ? mapSpecificData : this.state.mapInitialData ;
         return mapData.map(data =>(
-                <div key={data.region} className={this.cn(['MapData-info'])}>
-                <h5 className={this.cn(["mb-5"])}>{data.count}</h5>
+            <div key={data.region} className={this.cn(['MapData-info'])}>
+                <h5 className={this.cn(["mb-5"])} title={+data.count}>{shortNum(+data.count)}</h5>
                 <small className={this.cn(["small-grey-med"])}> Visitors From {data.region} </small>
                 <span className={this.cn(["percent-span"])}>{data.percent}%</span>
                 <div className={this.cn(["progress-bar"])}> <ProgressBar animated now={data.percent} /> </div>
-                </div>
-            )
-        );
+            </div>
+        ));
     }
     render(){
         return <Aux>
-            <div className={this.cn(['MapData-header'])}> {this.props.mapClicked && this.state.hasVisitor ? this.props.mapClicked.dataset.tip:"World"} </div>
+            <div className={this.cn(['MapData-header'])}> 
+            {this.props.mapClicked && this.state.hasVisitor 
+                ?   this.props.mapClicked.dataset.tip
+                :   "World"
+            }</div>
             {this.mainData()}
+            <div onClick={()=>this.setState({mapSpecificData:null})}>{this.state.worldAlarm ? 'back to world' : ''}</div>
         </Aux>
     }
 }

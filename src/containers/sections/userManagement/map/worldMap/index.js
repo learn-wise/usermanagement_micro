@@ -15,6 +15,7 @@ class WorldMap extends Component {
       maxZoom:3,
       draggable: false,
       container: null,
+      selectedCountry:{dataset:{tip:'World'},id:"world"},
       visitors:{
         mapData:{
           monthly:{},
@@ -30,6 +31,9 @@ class WorldMap extends Component {
       mapType:'monthly'
     };
   }
+  componentWillMount(){
+    this.props.socket.emit('mapType','monthly')
+  }
   componentDidMount() {
     this.socketHandler()
     this.DragHandler()
@@ -37,13 +41,20 @@ class WorldMap extends Component {
   componentDidUpdate(prevProps, prevState) {
     this.updateZoom(prevProps, prevState)
     this.colorizeCountry()
+    this.mapSwitchHandler(prevState)
   }
+  mapSwitchHandler=(prevState)=>{
+    if(this.state.mapType !== prevState.mapType){
+      this.props.socket.emit('mapType',this.state.mapType)
+      this.props.selectedCountry(this.state.selectedCountry,this.state.mapType)
+    }
+  };
   colorizeCountry=()=>{
     let seriesData = this.state.visitors.mapData.monthly
     if(this.state.mapType === 'yearly'){
       seriesData = this.state.visitors.mapData.yearly
-      console.log(seriesData)
     }
+    TweenLite.to($(`.${classes.svg_WorldMap} path`), 1, { fill:"#ccc" });
     if(Object.keys(seriesData).length > 0){
       let totalSum = Object.values(seriesData).reduce((sum, num) =>Number(sum) + Number(num));
       for (let el in seriesData) {
@@ -56,9 +67,7 @@ class WorldMap extends Component {
           .string();
           TweenLite.to($(`#${el}`),1, { fill: `${color}` });
       }
-    }else{
-      TweenLite.to($(`.${classes.svg_WorldMap} path`), 1, { fill:"#ccc" });
-    }
+    }else{ TweenLite.to($(`.${classes.svg_WorldMap} path`), 1, { fill:"#ccc" }); }
   };
   updateZoom=(prevPros,prevState)=>{
     if( prevState.zoomLevel !== this.state.zoomLevel ){
@@ -86,20 +95,21 @@ class WorldMap extends Component {
     this.draggableFunc[0].disable();
   };
   socketHandler = ()=>{
-    this.props.socket.on('visitorsMonthlyStateCountry',monthly=>{ 
-      let mapData = { ...this.state.visitors.mapData, monthly }
-      let visitors = { ...this.state.visitors, mapData }
-      this.setState({visitors})
-    })
-    this.props.socket.on('visitorsYearlyStateCountry',yearly=>{ 
-      let mapData = { ...this.state.visitors.mapData, yearly }
-      let visitors = { ...this.state.visitors, mapData }
-      this.setState({visitors})
-    })
+      this.props.socket.on('visitorsMonthlyStateCountry',monthly=>{ 
+        let mapData = { ...this.state.visitors.mapData, monthly }
+        let visitors = { ...this.state.visitors, mapData }
+        this.setState({visitors})
+      })
+      this.props.socket.on('visitorsYearlyStateCountry',yearly=>{ 
+        let mapData = { ...this.state.visitors.mapData, yearly }
+        let visitors = { ...this.state.visitors, mapData }
+        this.setState({visitors})
+      })
   };
   clickHandler = i => {
     $(i.target).toggleClass(classes.selected);
-    this.props.selectedCountry(i.target)
+    this.setState({selectedCountry:i.target})
+    this.props.selectedCountry(i.target,this.state.mapType)
   };
   onHoverHandler = i => {
     $(i.target).toggleClass(classes.hovered);

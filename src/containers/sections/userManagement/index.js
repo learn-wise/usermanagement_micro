@@ -11,7 +11,8 @@ class UserManagement extends Component {
   constructor(props){
     super(props)
     this.state={
-      mapClicked : false
+      mapClicked : false,
+      mapType:"monthly"
     }
   }
   usersSocket    = this.props.socket('users')
@@ -39,12 +40,13 @@ class UserManagement extends Component {
         <div className={cn(["users-Distribution","card"])}>
           <WorldMap 
             socket={this.visitorsSocket} 
-            selectedCountry={(el)=>this.setState({mapClicked:el})}/>
+            selectedCountry={(el,mapType)=>this.setState({mapClicked:el,mapType})}/>
         </div>
         <div className={cn(["section-MapStatistic","card"])}>
           <MapDistribution 
             visiSocket={this.visitorsSocket} 
             mapClicked={this.state.mapClicked}
+            mapType={this.state.mapType}
             />
         </div>
         <div className={cn(["section-Notification"])}> <ChatNotification/> </div>
