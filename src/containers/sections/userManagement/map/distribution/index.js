@@ -12,15 +12,13 @@ class MapDistribution extends Component{
             mapInitialData:[],
             mapSpecificData:null,
             hasVisitor:false,
-            worldAlarm:false
+            worldAlarm:false,
         }
         this.cn = (elem)=>cl(elem, classes)
     }
-    
     componentWillMount() {
         this.mapInitialData() 
     }
-    
     componentDidUpdate(prevProps,prevState){
         if( 
             this.props.mapClicked !== prevProps.mapClicked 
@@ -32,7 +30,7 @@ class MapDistribution extends Component{
                     mapType:this.props.mapType
                 })
                 this.setState({worldAlarm:true})
-            }else{ this.mapInitialData() }
+            }else{ this.mapInitialData({ mapSpecificData:null, worldAlarm:false }) }
         }
     }
     componentDidMount(){
@@ -43,10 +41,10 @@ class MapDistribution extends Component{
             }else{ this.setState({ hasVisitor:false }) }
         })
     }
-    mapInitialData =()=>{
+    mapInitialData =(config=null)=>{
         this.visitorSocket.emit('visitorsTopCountry',{mapType:this.props.mapType})
         this.visitorSocket.on('visitorsTopCountry_callback',countries=>{
-            this.setState({mapInitialData:countries})
+            this.setState({ mapInitialData:countries,...config})
         })
     }
     mainData=()=>{
@@ -61,17 +59,27 @@ class MapDistribution extends Component{
             </div>
         ));
     }
+    backBtn = ()=>{
+        return this.state.worldAlarm 
+        ? <button 
+            onClick={()=>this.props.clearSelectedCountry(true)} 
+            className={this.cn(['MapData-backToWorld'])}
+            >World Distribution</button>
+        : ''
+    }
+    headerData =()=>{
+        return <div className={this.cn(['MapData-header'])}> 
+        {this.props.mapClicked && this.state.hasVisitor 
+            ?   this.props.mapClicked.dataset.tip
+            :   "World"
+        }</div>
+    }
     render(){
         return <Aux>
-            <div className={this.cn(['MapData-header'])}> 
-            {this.props.mapClicked && this.state.hasVisitor 
-                ?   this.props.mapClicked.dataset.tip
-                :   "World"
-            }</div>
+            {this.headerData()}
             {this.mainData()}
-            <div onClick={()=>this.setState({mapSpecificData:null})}>{this.state.worldAlarm ? 'back to world' : ''}</div>
+            {this.backBtn()}
         </Aux>
     }
 }
-
 export default MapDistribution;

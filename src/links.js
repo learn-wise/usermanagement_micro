@@ -21,7 +21,7 @@ export const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 export const subscriptionLink = (config = {}) =>
   new WebSocketLink({
-    uri:'ws://localhost:8000/subscriptions',
+    uri:'http://localhost:8000/subscriptions',
     options: { 
         reconnect: true,
         reconnectionAttempts:5,

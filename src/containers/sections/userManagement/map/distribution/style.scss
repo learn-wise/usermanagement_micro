@@ -1,3 +1,4 @@
+@import "../../../../../components/scss/main.scss";
 .MapData {
     &-header {
         padding: 1rem 2rem;
@@ -16,14 +17,38 @@
 
     &-info {
         position: relative;
-        &:not(:last-child)::after {
+        &:not(:last-of-type)::after {
             content: "";
             position: absolute;
             width: 100%;
             border: 3px dashed rgba(#262626,.2);
             display: block;
-            top: 180%;
+            top: 150%;
             transform: translateY(-50%);
+        }
+    }
+    &-backToWorld{
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        font-weight: 400;
+        font-family: 'Literata';
+        text-transform: capitalize;
+        border-radius: 5px;
+        box-shadow: $button-shadow;
+        text-align: center;
+        width: 36%;
+        margin: 0 auto;
+        position: absolute;
+        left: 50%;
+        background: linear-gradient(to right, #0f2027, #203a43, #2c5364); 
+        transform: translate(-50%,-50%);
+        color: #fff;
+        border: none;
+        bottom:0;
+        transition: all 1s;
+        &:hover{
+            width: 90%;
+            background: linear-gradient(to left, #0f2027, #203a43, #2c5364); 
         }
     }
 }

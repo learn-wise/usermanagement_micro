@@ -30,23 +30,31 @@ class WorldMap extends Component {
       },
       mapType:'monthly'
     };
-  }
+  };
   componentWillMount(){
     this.props.socket.emit('mapType','monthly')
-  }
+  };
   componentDidMount() {
     this.socketHandler()
     this.DragHandler()
-  }
+  };
   componentDidUpdate(prevProps, prevState) {
     this.updateZoom(prevProps, prevState)
     this.colorizeCountry()
     this.mapSwitchHandler(prevState)
-  }
+    this.returnToDefault(prevProps)
+  };
+  returnToDefault=(prevProps)=>{
+    if(this.props.returnToDefault !== prevProps.returnToDefault){
+      let selectedCountry={dataset:{tip:'World'},id:"world"}
+      this.setState({selectedCountry})
+      this.props.selectedCountry(selectedCountry,this.state.mapType)
+    }
+  };
   mapSwitchHandler=(prevState)=>{
     if(this.state.mapType !== prevState.mapType){
       this.props.socket.emit('mapType',this.state.mapType)
-      this.props.selectedCountry(this.state.selectedCountry,this.state.mapType)
+      this.props.selectedCountry(this.state.selectedCountry,this.state.mapType,false)
     }
   };
   colorizeCountry=()=>{
@@ -178,7 +186,6 @@ class WorldMap extends Component {
         {this.btnHandler()}
       </div>
     );
-  }
+  };
 }
-
 export default WorldMap;

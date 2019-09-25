@@ -6,18 +6,26 @@ import MapDistribution from "./map/distribution";
 import ChatNotification from './chat'
 import MonthlyState from './chart/monthlyState';
 import UsersList from './table/usersList';
-import { OnlineUsers, OnlineVisitors, TotalUsers, VerifiedUsers } from './chart/microState/main'
+import { 
+  OnlineUsers,
+  OnlineVisitors,
+  TotalUsers, 
+  VerifiedUsers } from './chart/microState/main'
 class UserManagement extends Component {
   constructor(props){
     super(props)
     this.state={
       mapClicked : false,
-      mapType:"monthly"
+      mapType:"monthly",
+      clearSelectedCountry:false
     }
-  }
-  usersSocket    = this.props.socket('users')
-  visitorsSocket = this.props.socket('visitors')
-  render() {
+    this.usersSocket    = this.props.socket('users')
+    this.visitorsSocket = this.props.socket('visitors')
+  };
+  componentWillMount(){
+    this.checkSocketsHealth()
+  };
+  checkSocketsHealth=()=>{
     this.usersSocket.on('connect_error', (error) => {
       console.log('[_usersSocket_]',error)
       this.usersSocket.close()
@@ -26,8 +34,9 @@ class UserManagement extends Component {
       console.log('[_visitorsSocket_]',error)
       this.visitorsSocket.close()
     });
+  };
+  render() {
     function cn(elem) { return cl(elem, classes); }
-
     return (
       <div className={cn(["userManagement"])}>
         <div className={cn(["section-Count"])}>
@@ -40,21 +49,22 @@ class UserManagement extends Component {
         <div className={cn(["users-Distribution","card"])}>
           <WorldMap 
             socket={this.visitorsSocket} 
-            selectedCountry={(el,mapType)=>this.setState({mapClicked:el,mapType})}/>
+            selectedCountry={(el,mapType)=>this.setState({mapClicked:el,mapType})}
+            returnToDefault={this.state.clearSelectedCountry}
+            />
         </div>
         <div className={cn(["section-MapStatistic","card"])}>
           <MapDistribution 
             visiSocket={this.visitorsSocket} 
             mapClicked={this.state.mapClicked}
             mapType={this.state.mapType}
-            />
+            clearSelectedCountry={()=>this.setState((state, props)=>({clearSelectedCountry:!state.clearSelectedCountry}))}/>
         </div>
         <div className={cn(["section-Notification"])}> <ChatNotification/> </div>
         <div className={cn(["section-MonthlyState","card"])}> <MonthlyState/> </div>
         <div className={cn(["section-UsersList","card"])}> <UsersList/> </div>
       </div>
     );
-  }
+  };
 }
-
 export default UserManagement;

@@ -9,15 +9,11 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
 import io from 'socket.io-client';
 import Layout from './Layout';
-import { errorLink, queryOrMutationLink, subscriptionLink, requestLink } from './links';
-// import { errorLink, queryOrMutationLink, requestLink, } from './links';
+import { errorLink, queryOrMutationLink } from './links';
 const API_HOST = 'http://localhost:5000'
 const links = [
    errorLink,
-   requestLink({
-     queryOrMutationLink: queryOrMutationLink({uri: `${API_HOST}/graphql`}),
-     subscriptionLink: subscriptionLink(),
-   }),
+   queryOrMutationLink({uri: `${API_HOST}/graphql`})
  ];
 
 const client = new ApolloClient({

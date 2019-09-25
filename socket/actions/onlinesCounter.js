@@ -183,7 +183,6 @@ Onlines.visitors = (socket)=> {
     }
   })
   socket.on('visitorsTopCountry',({mapType})=>{
-    console.log(mapType)
     if(mapType === 'monthly'){
       redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,(err,reply)=>{
         reply = optimizeCollect(reply,5)
@@ -198,8 +197,6 @@ Onlines.visitors = (socket)=> {
           { count: "154475", region: "Australia", percent: "40" }, 
           { count: "55878975156", region: "India", percent: "90" }
         ]
-        console.log(reply)
-
         socket.emit("visitorsTopCountry_callback",reply)
       })
     }
