@@ -5,6 +5,7 @@ import Color from "color";
 import { Draggable, TweenLite } from "gsap/all";
 import WorldMapSvg from './worldMap_svg';
 import ReactTooltip from 'react-tooltip';
+import MapLoading from "./mapLoading";
 class WorldMap extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +29,8 @@ class WorldMap extends Component {
           yearly :{}
         }
       },
-      mapType:'monthly'
+      mapType:'monthly',
+      mapLoading:true
     };
   };
   componentWillMount(){
@@ -36,14 +38,18 @@ class WorldMap extends Component {
   };
   componentDidMount() {
     this.socketHandler()
-    this.DragHandler()
   };
   componentDidUpdate(prevProps, prevState) {
     this.updateZoom(prevProps, prevState)
     this.colorizeCountry()
     this.mapSwitchHandler(prevState)
     this.returnToDefault(prevProps)
+    this.DragHandler(prevState)
+    this.mapLoadingHandler(prevState)
   };
+  mapLoadingHandler=(prevState)=>{
+    if(this.state.visitors !== prevState.visitors) this.setState({mapLoading:false}) 
+  }
   returnToDefault=(prevProps)=>{
     if(this.props.returnToDefault !== prevProps.returnToDefault){
       let selectedCountry={dataset:{tip:'World'},id:"world"}
@@ -63,6 +69,7 @@ class WorldMap extends Component {
       seriesData = this.state.visitors.mapData.yearly
     }
     TweenLite.to($(`.${classes.svg_WorldMap} path`), 1, { fill:"#ccc" });
+    if(!seriesData){ return null }
     if(Object.keys(seriesData).length > 0){
       let totalSum = Object.values(seriesData).reduce((sum, num) =>Number(sum) + Number(num));
       for (let el in seriesData) {
@@ -90,17 +97,19 @@ class WorldMap extends Component {
       }
     }
   };
-  DragHandler=()=>{
-    this.setState({ container:$("#container") });
-    this.draggableFunc = Draggable.create(this.mapRef.current, {
-      type: "x,y",
-      bounds:{width:600, height:600},
-      edgeResistance: .5,
-      onDragEnd: () => { console.log("Drag END!"); },
-      onPress: () => { console.log("draggable clicked!!!"); },
-      onDragStart: () => { console.log("Dragging!!!"); }
-    });
-    this.draggableFunc[0].disable();
+  DragHandler=(prevState)=>{
+    if(this.state.mapLoading !== prevState.mapLoading && this.state.mapLoading === false){
+      this.setState({ container:$("#container") });
+      this.draggableFunc = Draggable.create(this.mapRef.current, {
+        type: "x,y",
+        bounds:{width:600, height:600},
+        edgeResistance: .5,
+        onDragEnd: () => { console.log("Drag END!"); },
+        onPress: () => { console.log("draggable clicked!!!"); },
+        onDragStart: () => { console.log("Dragging!!!"); }
+      });
+      this.draggableFunc[0].disable();
+    }
   };
   socketHandler = ()=>{
       this.props.socket.on('visitorsMonthlyStateCountry',monthly=>{ 
@@ -119,10 +128,7 @@ class WorldMap extends Component {
     this.setState({selectedCountry:i.target})
     this.props.selectedCountry(i.target,this.state.mapType)
   };
-  onHoverHandler = i => {
-    $(i.target).toggleClass(classes.hovered);
-  };
-  offHoverHandler = i => {
+  HoverHandler = i => {
     $(i.target).toggleClass(classes.hovered);
   };
   zoomInHandler = () => {
@@ -143,6 +149,7 @@ class WorldMap extends Component {
     }
   };
   btnHandler = ()=>{
+    if(!this.state.visitors.mapData.monthly){ return null }
     if( Object.keys(this.state.visitors.mapData.monthly).length > 0 ){
       return <div className={classes.btn}>
         <button 
@@ -157,35 +164,37 @@ class WorldMap extends Component {
     }
   };
   render() {
-    return (
-      <div>
-        <div className={classes.App}>
-          <div className={classes.controller}>
-            <button
-              className={classes.zoomIn}
-              onClick={this.zoomInHandler}
-              disabled={this.state.zoomLevel < this.state.maxZoom ? false : true} >+</button>
-            <button
-              className={classes.zoomOut}
-              onClick={this.zoomOutHandler}
-              disabled={this.state.zoomLevel > this.state.minZoom ? false : true} >-</button>
+    if(!this.state.mapLoading){
+      return (
+        <div>
+          <div className={classes.App}>
+            <div className={classes.controller}>
+              <button
+                className={classes.zoomIn}
+                onClick={this.zoomInHandler}
+                disabled={this.state.zoomLevel < this.state.maxZoom ? false : true} >+</button>
+              <button
+                className={classes.zoomOut}
+                onClick={this.zoomOutHandler}
+                disabled={this.state.zoomLevel > this.state.minZoom ? false : true} >-</button>
+            </div>
+            <ReactTooltip className={classes.toolTip}/>
+            <figure id="container" className={classes.container} style={{margin:"none"}}>
+                <svg
+                  className={classes.svg_WorldMap}
+                  strokeLinejoin="round"
+                  onWheel={this.onWheel}
+                  ref={this.mapRef}
+                  viewBox="0 0 1020 700" 
+                  preserveAspectRatio="xMidYMid meet"
+                  >{WorldMapSvg(this.HoverHandler,this.clickHandler)}
+                </svg>
+            </figure>
           </div>
-          <ReactTooltip className={classes.toolTip}/>
-          <figure id="container" className={classes.container} style={{margin:"none"}}>
-              <svg
-                className={classes.svg_WorldMap}
-                strokeLinejoin="round"
-                onWheel={this.onWheel}
-                ref={this.mapRef}
-                viewBox="0 0 1020 700" 
-                preserveAspectRatio="xMidYMid meet"
-                >{WorldMapSvg(this.onHoverHandler,this.clickHandler,this.offHoverHandler)}
-              </svg>
-          </figure>
+          {this.btnHandler()}
         </div>
-        {this.btnHandler()}
-      </div>
-    );
+      );
+    }else{ return (<MapLoading/>); }
   };
 }
 export default WorldMap;

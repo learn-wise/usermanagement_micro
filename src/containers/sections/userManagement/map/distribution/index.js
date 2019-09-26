@@ -13,6 +13,7 @@ class MapDistribution extends Component{
             mapSpecificData:null,
             hasVisitor:false,
             worldAlarm:false,
+            dataLoading:true
         }
         this.cn = (elem)=>cl(elem, classes)
     }
@@ -31,6 +32,11 @@ class MapDistribution extends Component{
                 })
                 this.setState({worldAlarm:true})
             }else{ this.mapInitialData({ mapSpecificData:null, worldAlarm:false }) }
+
+        }
+        if(this.state.mapInitialData !== prevState.mapInitialData 
+            || this.state.mapSpecificData !== prevState.mapSpecificData){
+                this.setState({dataLoading:false})
         }
     }
     componentDidMount(){
@@ -48,8 +54,9 @@ class MapDistribution extends Component{
         })
     }
     mainData=()=>{
-        let {mapSpecificData} = this.state
-        let mapData = mapSpecificData ? mapSpecificData : this.state.mapInitialData ;
+        let {mapSpecificData,mapInitialData} = this.state
+        let mapData = mapSpecificData ? mapSpecificData : mapInitialData ;
+        if(Object.keys(mapData).length === 0){return null}
         return mapData.map(data =>(
             <div key={data.region} className={this.cn(['MapData-info'])}>
                 <h5 className={this.cn(["mb-5"])} title={+data.count}>{shortNum(+data.count)}</h5>
@@ -60,7 +67,9 @@ class MapDistribution extends Component{
         ));
     }
     backBtn = ()=>{
-        return this.state.worldAlarm 
+        console.log('1',this.state.mapInitialData)
+        console.log('2',this.state.mapSpecificData)
+        return this.state.worldAlarm && (Object.keys(this.state.mapInitialData).length === 0 || this.state.mapSpecificData ) 
         ? <button 
             onClick={()=>this.props.clearSelectedCountry(true)} 
             className={this.cn(['MapData-backToWorld'])}
@@ -74,12 +83,25 @@ class MapDistribution extends Component{
             :   "World"
         }</div>
     }
+
     render(){
-        return <Aux>
-            {this.headerData()}
-            {this.mainData()}
-            {this.backBtn()}
-        </Aux>
+        if(!this.state.dataLoading){
+            return <Aux>
+                {this.headerData()}
+                {this.mainData()}
+                {this.backBtn()}
+            </Aux>
+        }else{ 
+            return <div className={classes.wrapper}>
+                <div className={classes.circle}></div>
+                <div className={classes.circle}></div>
+                <div className={classes.circle}></div>
+                <div className={classes.shadow}></div>
+                <div className={classes.shadow}></div>
+                <div className={classes.shadow}></div>
+                <span>Loading</span>
+            </div>
+        }
     }
 }
 export default MapDistribution;

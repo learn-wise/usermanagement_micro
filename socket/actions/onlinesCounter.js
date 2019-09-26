@@ -148,58 +148,43 @@ Onlines.visitors = (socket)=> {
   redis.get(online_Visitors,(err,reply)=>{
     socket.emit(ONLINE_VISITORS_INITIAL,{onlinesCount:reply})
   })
+  
   //  Map 
   socket.on('mapType',data=>{
-    if(data === 'monthly'){
-      redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,(err,reply)=>{
-        let obj = { IR: '1000', US: '600',GL:'100',RU:'50'}
-        socket.emit(VISITORS_MONTHLY_STATE_COUNTRY,obj)
-      })
-    }else{
-      redis.hgetall(`visitors:state:country:year:${Year}`,(err,reply)=>{
-        let obj = { IR: '10', US: '100',GL:'500',RU:'50',CA:'100'}
-        socket.emit(VISITORS_YEARLY_STATE_COUNTRY,obj)
-      })
-    }
+    (data === 'monthly')
+      ?redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,(err,reply)=>
+        socket.emit(VISITORS_MONTHLY_STATE_COUNTRY,reply) )
+      :redis.hgetall(`visitors:state:country:year:${Year}`,(err,reply)=>
+        socket.emit(VISITORS_YEARLY_STATE_COUNTRY,reply)  )
   })
   socket.on("visitorsCountryDetail",data=>{
     let {countryId,mapType} = data
-    if(mapType === "monthly"){
-      redis.hget( `visitors:state:city:month:${Year}:${Month}`, countryId, (err,reply)=>{
-        let obj =  { tehran : 100 , tabriz : 100 , shiraz: 20, Mashad:10 , Rasht:50,esfahan:5, Zanjan:10,Qom:12 }
-          obj = optimizeCollect(obj,5)
-          obj = JSON.stringify(obj)
-        socket.emit('visitorsCountryDetail_receive',obj)
-        // socket.emit('visitorsCountryDetail_receive',reply)
-      })
-    }else{
-      redis.hget( `visitors:state:city:year:${Year}`, countryId, (err,reply)=>{
-        let obj =  { tehran : 100 , tabriz : 100 , shiraz: 50, Mashad:20 , Rasht:500,esfahan:5, Zanjan:100,Qom:12 }
+    function countryDetail(err,reply){
+      reply = optimizeCollect(reply,5)
+      reply = JSON.stringify(reply)
+      socket.emit('visitorsCountryDetail_receive',reply)
+    }
+    function countryDetail_mock(err,reply){
+      console.log('countryDetail_mock::',reply)
+      let obj =  { tehran : 100 , tabriz : 100 , shiraz: 20, Mashad:10 , Rasht:50,esfahan:5, Zanjan:10,Qom:12 }
         obj = optimizeCollect(obj,5)
         obj = JSON.stringify(obj)
-        socket.emit('visitorsCountryDetail_receive',obj)
-        // socket.emit('visitorsCountryDetail_receive',reply)
-      })
+      socket.emit('visitorsCountryDetail_receive',obj)
     }
+
+    (mapType === "monthly")
+      ?redis.hget( `visitors:state:city:month:${Year}:${Month}`,countryId,countryDetail)
+      :redis.hget( `visitors:state:city:year:${Year}`,countryId,countryDetail)
+
   })
   socket.on('visitorsTopCountry',({mapType})=>{
-    if(mapType === 'monthly'){
-      redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,(err,reply)=>{
-        reply = optimizeCollect(reply,5)
-        socket.emit("visitorsTopCountry_callback",reply)
-      })
-    }else{
-      redis.hgetall(`visitors:state:country:year:${Year}`,(err,reply)=>{
-        reply = optimizeCollect(reply,5)
-        reply = [
-          { count: "89798413500", region: "USA", percent: "50" }, 
-          { count: "561464", region: "Europe", percent: "80" }, 
-          { count: "154475", region: "Australia", percent: "40" }, 
-          { count: "55878975156", region: "India", percent: "90" }
-        ]
-        socket.emit("visitorsTopCountry_callback",reply)
-      })
+    function topCountry_Visitor(err,reply){
+      reply = optimizeCollect(reply,5)
+      socket.emit("visitorsTopCountry_callback",reply)
     }
+    (mapType === 'monthly')
+      ?redis.hgetall(`visitors:state:country:month:${Year}:${Month}`,topCountry_Visitor)
+      :redis.hgetall(`visitors:state:country:year:${Year}`,topCountry_Visitor)
   })
 }
 Onlines.disconnect=(socket)=>{
