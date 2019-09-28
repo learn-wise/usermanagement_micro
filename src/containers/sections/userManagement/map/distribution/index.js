@@ -3,6 +3,7 @@ import { ProgressBar } from "react-bootstrap";
 import cl from "../../../../../Hoc/multiclass";
 import Aux from "../../../../../Hoc/wrapper";
 import classes from './style.scss';
+import NodataSvg from './svg/noDataSvg'
 import shortNum from 'short-number';
 class MapDistribution extends Component{
     constructor(props) {
@@ -56,7 +57,9 @@ class MapDistribution extends Component{
     mainData=()=>{
         let {mapSpecificData,mapInitialData} = this.state
         let mapData = mapSpecificData ? mapSpecificData : mapInitialData ;
-        if(Object.keys(mapData).length === 0){return null}
+        // TODO:remove nodatasvg when data had been initilized
+        console.log(mapData)
+        if(Object.keys(mapData).length === 0 ){ return <NodataSvg/> }
         return mapData.map(data =>(
             <div key={data.region} className={this.cn(['MapData-info'])}>
                 <h5 className={this.cn(["mb-5"])} title={+data.count}>{shortNum(+data.count)}</h5>
@@ -67,8 +70,6 @@ class MapDistribution extends Component{
         ));
     }
     backBtn = ()=>{
-        console.log('1',this.state.mapInitialData)
-        console.log('2',this.state.mapSpecificData)
         return this.state.worldAlarm && (Object.keys(this.state.mapInitialData).length === 0 || this.state.mapSpecificData ) 
         ? <button 
             onClick={()=>this.props.clearSelectedCountry(true)} 

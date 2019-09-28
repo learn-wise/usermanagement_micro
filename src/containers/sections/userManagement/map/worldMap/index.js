@@ -48,7 +48,9 @@ class WorldMap extends Component {
     this.mapLoadingHandler(prevState)
   };
   mapLoadingHandler=(prevState)=>{
-    if(this.state.visitors !== prevState.visitors) this.setState({mapLoading:false}) 
+    if(this.state.visitors !== prevState.visitors){
+      this.setState({mapLoading:false}) 
+    } 
   }
   returnToDefault=(prevProps)=>{
     if(this.props.returnToDefault !== prevProps.returnToDefault){
