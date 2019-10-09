@@ -28,4 +28,5 @@ io.on('connection', (socket) => {
 });
 
 io.listen(8000);
+console.clear()
 console.log('Socket Server listening on port::', 8000);

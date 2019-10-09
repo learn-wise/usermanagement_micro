@@ -73,8 +73,7 @@ class TotalUsers extends Component{
         }
         return classArray.join(' ')
     }
-    render(){
-        
+    render(){       
         return(
             <div className={classes.container}>
                 <h5 className={classes.header}>Total users</h5>

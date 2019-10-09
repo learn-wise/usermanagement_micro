@@ -1,7 +1,6 @@
 const Redis = require('redis')
-// const subscriber = Redis.createClient()
-const subscriber  = Redis.createClient().setMaxListeners(0)
-
+const redisClient  = Redis.createClient()
+const subscriber = redisClient.duplicate().setMaxListeners(0)
 const pubSubClass = class PubSub {
     // publish(channel, message) {
     //     publisher.publish(channel, message)

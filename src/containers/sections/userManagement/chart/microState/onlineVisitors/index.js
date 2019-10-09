@@ -50,15 +50,14 @@ class OnlineVisitors extends Component{
             let Days_Of_Month = moment().daysInMonth()
             let i = 0;
             let j = +current_Day;
-    
+            
             while(i < current_Day){
                 let specificDay =  `${current_Year}/${current_Month}/${i+1}`;
                 chartData[specificDay] === undefined
                 ?resultData[i] = 0
-                :resultData[i] = chartData[specificDay];
+                :resultData[i] = Object.keys(JSON.parse(chartData[specificDay])).length;
                 i++
             }
-    
             while(j<Days_Of_Month){ resultData[j] = 0; j++ }
             this.setState({chartData:[{data:resultData}]})
         })

@@ -42,10 +42,12 @@ class MapDistribution extends Component{
     }
     componentDidMount(){
         this.visitorSocket.on('visitorsCountryDetail_receive',reply=>{
-            if(reply && reply !== "{}"){
-                reply= JSON.parse(reply)
-                this.setState({ mapSpecificData:reply, hasVisitor:true })
-            }else{ this.setState({ hasVisitor:false }) }
+            (reply && reply !== "{}")
+                ?this.setState({ mapSpecificData:JSON.parse(reply), hasVisitor:true })
+                :this.setState({ hasVisitor:false })
+        })
+        this.visitorSocket.on('visitorsYearlyStateCountry',yearly=>{ 
+            if(yearly !== null){ this.mapInitialData() }
         })
     }
     mapInitialData =(config=null)=>{
@@ -57,8 +59,6 @@ class MapDistribution extends Component{
     mainData=()=>{
         let {mapSpecificData,mapInitialData} = this.state
         let mapData = mapSpecificData ? mapSpecificData : mapInitialData ;
-        // TODO:remove nodatasvg when data had been initilized
-        console.log(mapData)
         if(Object.keys(mapData).length === 0 ){ return <NodataSvg/> }
         return mapData.map(data =>(
             <div key={data.region} className={this.cn(['MapData-info'])}>

@@ -10,6 +10,7 @@ class WorldMap extends Component {
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
+    this.visitorsSocket = this.props.socket;
     this.state = {
       zoomLevel: 1,
       minZoom:1,
@@ -34,7 +35,7 @@ class WorldMap extends Component {
     };
   };
   componentWillMount(){
-    this.props.socket.emit('mapType','monthly')
+    this.visitorsSocket.emit('mapType','monthly')
   };
   componentDidMount() {
     this.socketHandler()
@@ -61,8 +62,8 @@ class WorldMap extends Component {
   };
   mapSwitchHandler=(prevState)=>{
     if(this.state.mapType !== prevState.mapType){
-      this.props.socket.emit('mapType',this.state.mapType)
-      this.props.selectedCountry(this.state.selectedCountry,this.state.mapType,false)
+      this.visitorsSocket.emit('mapType',this.state.mapType)
+      this.props.selectedCountry(this.state.selectedCountry,this.state.mapType)
     }
   };
   colorizeCountry=()=>{
@@ -114,12 +115,12 @@ class WorldMap extends Component {
     }
   };
   socketHandler = ()=>{
-      this.props.socket.on('visitorsMonthlyStateCountry',monthly=>{ 
+      this.visitorsSocket.on('visitorsMonthlyStateCountry',monthly=>{ 
         let mapData = { ...this.state.visitors.mapData, monthly }
         let visitors = { ...this.state.visitors, mapData }
         this.setState({visitors})
       })
-      this.props.socket.on('visitorsYearlyStateCountry',yearly=>{ 
+      this.visitorsSocket.on('visitorsYearlyStateCountry',yearly=>{ 
         let mapData = { ...this.state.visitors.mapData, yearly }
         let visitors = { ...this.state.visitors, mapData }
         this.setState({visitors})

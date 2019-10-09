@@ -66,8 +66,10 @@ class MonthlyVisitorsState extends Component {
   }
   series=()=>{
     return [
-      {name: "Jun", data: [30, 60, 100, 15, 25, 28, 38, 46]},
-      { name: "July", data: [20, 29, 37, 36, 44, 45, 50, 58] } 
+      {name: "Jun", data: [30, 60, 100, 15, 25, 28, 38, 46,48,49]},
+      { name: "July", data: [20, 29, 37] },
+      { name: "Aguest", data: [20, 29, 37,15, 25, 28, 38] } ,
+      { name: "February", data: [20, 29, 37,15, 25, 28, 38] } 
     ]
   }
 

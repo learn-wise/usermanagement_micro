@@ -17,7 +17,7 @@ class UserManagement extends Component {
     this.state={
       mapClicked : false,
       mapType:"monthly",
-      clearSelectedCountry:false
+      clearSelectedCountry:false,
     }
     this.usersSocket    = this.props.socket('users')
     this.visitorsSocket = this.props.socket('visitors')
