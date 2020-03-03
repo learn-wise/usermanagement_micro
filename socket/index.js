@@ -1,32 +1,28 @@
+const session = require('express-session');
 const io = require('socket.io')();
-const onlinesCounter = require('./actions/onlinesCounter')
-// const redisAdapter = require('socket.io-redis');
-// io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
-
-const usersSocket = io.of('/users')
-const visitorsSocket = io.of('/visitors')
-
-usersSocket.on('connection', (socket) => {
-  onlinesCounter.users(socket)
+let sessionMiddleware = session({
+  secret: '930611040afsan_nightmare',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true },
 });
+io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
+const onlinesCounter = require('./actions/onlineCounter');
+const redisAdapter = require('socket.io-redis');
+io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
 
-visitorsSocket.on('connection', (socket) => {
-  // socket.on('ok',data=>{ console.log(data) })
-  onlinesCounter.visitors(socket)
-});
+const usersSocket = io.of('/users');
+const visitorsSocket = io.of('/visitors');
 
-io.on('connection', (socket) => {
+usersSocket.on('connection', socket => onlinesCounter.users(socket));
 
-  console.log('socket connected...')
-  onlinesCounter.connect()
+visitorsSocket.on('connection', socket => onlinesCounter.visitors(socket));
 
-  socket.on('disconnect', (reason) => { 
-    console.log('socket disconnected...')
-    onlinesCounter.disconnect()
-  });
-  
+io.on('connection', socket => {
+  onlinesCounter.connect();
+  socket.on('disconnect', _reason => onlinesCounter.disconnect());
 });
 
 io.listen(8000);
-console.clear()
+console.clear();
 console.log('Socket Server listening on port::', 8000);
