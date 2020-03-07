@@ -24,6 +24,7 @@
     "bootstrap": "^4.3.1",
     "camelcase": "^5.2.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "chalk": "^3.0.0",
     "color": "^3.1.2",
     "country-code-lookup": "0.0.14",
     "css-loader": "2.1.1",

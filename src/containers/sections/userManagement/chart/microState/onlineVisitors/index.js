@@ -27,32 +27,27 @@ class OnlineVisitors extends Component {
 
     visitorsSocket.on('onlineVisitorsCount', count => {
       console.log(count);
-      if (!count) {
-        return null;
-      }
+      if (!count) return null;
+
       let prevCount = +this.state.statistic.onlinesCount;
       let nexCount = +count.onlinesCount;
-      if (prevCount < nexCount) {
-        this.setState({ increase: true, decrease: false });
-      }
-      if (prevCount > nexCount) {
-        this.setState({ decrease: true, increase: false });
-      }
+
+      if (prevCount < nexCount) this.setState({ increase: true, decrease: false });
+      if (prevCount > nexCount) this.setState({ decrease: true, increase: false });
+
       let statistic = { ...this.state.statistic, ...count };
       this.setState({ statistic });
     });
 
     visitorsSocket.on('onlineVisitorsInitial', count => {
-      if (!count.onlinesCount) {
-        count = { onlinesCount: 0 };
-      }
+      if (!count.onlinesCount) count = { onlinesCount: 0 };
+
       let statistic = { ...this.state.statistic, ...count };
       this.setState({ statistic });
     });
     visitorsSocket.on('onlineVisitorsTList', list => {
-      if (!list) {
-        return null;
-      }
+      if (!list) return null;
+
       let chartData = list;
       let resultData = [];
       let current_Month = moment().format('MM');
