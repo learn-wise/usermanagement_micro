@@ -20,13 +20,24 @@ class OnlineVisitors extends Component {
     };
   }
   componentWillMount() {
+    let current_Month = moment().format('MM');
+    let current_Day = moment().format('D');
+    let current_Year = moment().format('YYYY');
+    let Days_Of_Month = moment().daysInMonth();
+    let j = 0;
+    let finalData = [];
+    while (j < Days_Of_Month) {
+      finalData[j] = 0;
+      j++;
+    }
+    this.setState({ chartData: [{ data: finalData }] });
+
     const visitorsSocket = this.props.socket;
     visitorsSocket.on('connect_error', err => {
       if (err) this.setState({ error: 'socket server is down' });
     });
 
     visitorsSocket.on('onlineVisitorsCount', count => {
-      console.log(count);
       if (!count) return null;
 
       let prevCount = +this.state.statistic.onlinesCount;
@@ -50,10 +61,6 @@ class OnlineVisitors extends Component {
 
       let chartData = list;
       let resultData = [];
-      let current_Month = moment().format('MM');
-      let current_Day = moment().format('D');
-      let current_Year = moment().format('YYYY');
-      let Days_Of_Month = moment().daysInMonth();
       let i = 0;
       let j = +current_Day;
 

@@ -21,17 +21,26 @@ class OnlineUsers extends Component {
   }
 
   componentWillMount() {
+    let current_Month = moment().format('MM');
+    let current_Day = moment().format('D');
+    let current_Year = moment().format('YYYY');
+    let Days_Of_Month = moment().daysInMonth();
+    let j = 0;
+    let finalData = [];
+    while (j < Days_Of_Month) {
+      finalData[j] = 0;
+      j++;
+    }
+    this.setState({ chartData: [{ data: finalData }] });
+
     const usersSocket = this.props.socket;
     usersSocket.on('connect_error', err => {
-      if (err) {
-        this.setState({ error: 'socket server is down' });
-      }
+      if (err) this.setState({ error: 'socket server is down' });
     });
 
     usersSocket.on('onlines_initial', initial => {
-      if (!initial) {
-        initial = 0;
-      }
+      if (!initial) initial = 0;
+
       let statistic = {
         ...this.state.statistic,
         ...initial,
@@ -40,9 +49,8 @@ class OnlineUsers extends Component {
     });
 
     usersSocket.on('onlineUsersList', count => {
-      if (!count) {
-        return null;
-      }
+      if (!count) return null;
+
       let statistic = {
         ...this.state.statistic,
         ...count,
@@ -51,15 +59,11 @@ class OnlineUsers extends Component {
     });
 
     usersSocket.on('onlineUsersTList', list => {
-      if (!list) {
-        return null;
-      }
+      if (!list) return null;
+
       let chartData = list;
       let resultData = [];
-      let current_Month = moment().format('MM');
-      let current_Day = moment().format('D');
-      let current_Year = moment().format('YYYY');
-      let Days_Of_Month = moment().daysInMonth();
+
       let i = 0;
       let j = +current_Day;
 
@@ -79,17 +83,12 @@ class OnlineUsers extends Component {
     });
 
     usersSocket.on('usersOnline', count => {
-      if (!count) {
-        return null;
-      }
+      if (!count) return null;
+
       let prevCount = +this.state.statistic.onlinesCount;
       let nexCount = +count.onlinesCount;
-      if (prevCount < nexCount) {
-        this.setState({ increase: true, decrease: false });
-      }
-      if (prevCount > nexCount) {
-        this.setState({ decrease: true, increase: false });
-      }
+      if (prevCount < nexCount) this.setState({ increase: true, decrease: false });
+      if (prevCount > nexCount) this.setState({ decrease: true, increase: false });
 
       let statistic = {
         ...this.state.statistic,
@@ -102,16 +101,12 @@ class OnlineUsers extends Component {
   }
   arrowDownHandler = () => {
     let classArray = [classes.arrow_down];
-    if (this.state.decrease) {
-      classArray.push(classes.visible);
-    }
+    if (this.state.decrease) classArray.push(classes.visible);
     return classArray.join(' ');
   };
   arrowUpHandler = () => {
     let classArray = [classes.arrow_up];
-    if (this.state.increase) {
-      classArray.push(classes.visible);
-    }
+    if (this.state.increase) classArray.push(classes.visible);
     return classArray.join(' ');
   };
   render() {
