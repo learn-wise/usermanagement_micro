@@ -41,20 +41,16 @@ class UserManagement extends Component {
       <div className={cn(['userManagement'])}>
         <div className={cn(['section-Count'])}>
           <div className={cn(['users-Online', 'card'])}>
-            {' '}
-            <OnlineUsers socket={this.usersSocket} />{' '}
+            <OnlineUsers socket={this.usersSocket} />
           </div>
           <div className={cn(['visitors-Online', 'card'])}>
-            {' '}
-            <OnlineVisitors socket={this.visitorsSocket} />{' '}
+            <OnlineVisitors socket={this.visitorsSocket} />
           </div>
           <div className={cn(['users-Count', 'card'])}>
-            {' '}
-            <TotalUsers socket={this.usersSocket} />{' '}
+            <TotalUsers socket={this.usersSocket} />
           </div>
           <div className={cn(['users-Verified', 'card'])}>
-            {' '}
-            <VerifiedUsers socket={this.usersSocket} />{' '}
+            <VerifiedUsers socket={this.usersSocket} />
           </div>
         </div>
 
@@ -78,16 +74,13 @@ class UserManagement extends Component {
           />
         </div>
         <div className={cn(['section-Notification'])}>
-          {' '}
-          <ChatNotification />{' '}
+          <ChatNotification />
         </div>
         <div className={cn(['section-MonthlyState', 'card'])}>
-          {' '}
-          <MonthlyState />{' '}
+          <MonthlyState />
         </div>
         <div className={cn(['section-UsersList', 'card'])}>
-          {' '}
-          <UsersList />{' '}
+          <UsersList />
         </div>
       </div>
     );
