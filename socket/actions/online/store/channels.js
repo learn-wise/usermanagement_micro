@@ -3,7 +3,6 @@ const { Day, Year, Month } = require('../helper/util');
 module.exports = {
   //visitors
   online_Visitors: 'online:count',
-  online_Visitors_List: `online:visitors:list:${Day}`,
   Visitors_State_List: `visitors:state:city:month:${Year}:${Month}`,
   online_Visitors_Total_List: 'online:visitors:TList',
   //users

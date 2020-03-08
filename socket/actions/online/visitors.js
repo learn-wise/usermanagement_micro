@@ -11,7 +11,6 @@ const {
 
 const {
   online_Visitors,
-  online_Visitors_List,
   Visitors_State_List,
   online_Visitors_Total_List,
 } = require('./store/channels');
@@ -23,7 +22,7 @@ module.exports = (socket, redis, PubSub) => {
         socket.emit(ONLINE_VISITORS, { onlinesCount: reply });
       });
     }
-    if (message === online_Visitors_List) {
+    if (message === online_Visitors_Total_List) {
       redis.hgetall(online_Visitors_Total_List, (_err, reply) => {
         socket.emit(ONLINES_TOTAL_VISIT_LIST, reply);
       });
@@ -48,15 +47,3 @@ module.exports = (socket, redis, PubSub) => {
     socket.emit(ONLINE_VISITORS_INITIAL, { onlinesCount: reply });
   });
 };
-
-// redis.scard(online_Visitors_List,(err,count)=>{
-//   if(+count>0){
-//     console.log(count)
-//     redis.multi()
-//       .hset(online_Visitors_Total_List , Day , count)
-//       .hgetall(online_Visitors_Total_List)
-//       .exec((err,reply)=>{
-//         if(Array.isArray(reply)){ socket.emit(ONLINES_TOTAL_VISIT_LIST,reply[1]) }
-//       })
-//   }
-// })
