@@ -46,7 +46,7 @@
     "fs-extra": "7.0.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
-    "gsap": "^2.1.3",
+    "gsap": "^3.6.0",
     "html-webpack-plugin": "4.0.0-beta.5",
     "http-proxy-middleware": "^0.19.1",
     "identity-obj-proxy": "3.0.0",
